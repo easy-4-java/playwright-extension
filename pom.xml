@@ -6,10 +6,23 @@
     <artifactId>playwright-extension</artifactId>
     <version>1.0.x.20260630-SNAPSHOT</version>
     <packaging>jar</packaging>
-        <developers>
+        	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+	<scm>
+		<connection>scm:git:https://github.com/easy-4-java/${project.artifactId}.git</connection>
+		<developerConnection>scm:git:https://github.com/easy-4-java/${project.artifactId}.git</developerConnection>
+		<url>https://github.com/easy-4-java/${project.artifactId}</url>
+		<tag>${project.artifactId}</tag>
+	</scm>
+<developers>
         <developer>
             <name>Loong Wan</name>
-            <email>hiwepy@gmail.com</email>
+            	<description>${project.artifactId} - Easy4J (io.github.easy4j) component</description>
+<email>hiwepy@gmail.com</email>
             <url>https://github.com/loong10k</url>
             <roles>
                 <role>developer</role>
@@ -20,7 +33,11 @@
 
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <central-publishing-maven-plugin.version>0.7.0</central-publishing-maven-plugin.version>
+		<maven-javadoc-plugin.version>3.11.2</maven-javadoc-plugin.version>
+		<maven-source-plugin.version>3.4.0</maven-source-plugin.version>
+		<maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
         <playwright.version>1.46.0</playwright.version>
         <commons-pool2.version>2.11.1</commons-pool2.version>
@@ -38,7 +55,37 @@
                     <target>${java.version}</target>
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
-            </plugin></plugins></pluginManagement></build>
+            </plugin></plugins></pluginManagement><plugins>			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>${maven-javadoc-plugin.version}</version>
+				<configuration>
+					<additionalparam>-Xdoclint:none</additionalparam>
+					<failOnError>false</failOnError>
+				</configuration>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>${maven-source-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+</plugins></build>
     <distributionManagement>
         <repository>
             <id>2624322-release-6F6h6R</id>
