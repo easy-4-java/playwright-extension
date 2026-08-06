@@ -6,6 +6,18 @@
     <artifactId>playwright-extension</artifactId>
     <version>1.0.x.20260630-SNAPSHOT</version>
     <packaging>jar</packaging>
+    <developers>
+        <developer>
+            <name>Loong Wan</name>
+            <email>hiwepy@gmail.com</email>
+            <url>https://github.com/loong10k</url>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>+8</timezone>
+        </developer>
+    </developers>
+
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
