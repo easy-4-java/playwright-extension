@@ -4,6 +4,8 @@
 
 [![Java](https://img.shields.io/badge/Java-21-orange)](https://github.com/easy-4-java/playwright-extension) [![License](https://img.shields.io/badge/license-Apache%202.0-green)](https://www.apache.org/licenses/LICENSE-2.0.txt)
 
+playwright-extension 是基于官方 Microsoft Playwright Java 库（包命名空间 com.microsoft.playwright.spring.boot）的轻量池化工具层。
+
 ## 目录
 
 - [1. 项目概述](#1-项目概述)

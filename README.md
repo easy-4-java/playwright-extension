@@ -4,6 +4,8 @@
 
 [![Java](https://img.shields.io/badge/Java-21-orange)](https://github.com/easy-4-java/playwright-extension) [![License](https://img.shields.io/badge/license-Apache%202.0-green)](https://www.apache.org/licenses/LICENSE-2.0.txt)
 
+playwright-extension is a thin, pooling-oriented utility layer on top of the official
+
 ## Table of Contents
 
 - [1. Project Overview](#1-project-overview)
