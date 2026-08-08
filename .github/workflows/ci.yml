@@ -42,7 +42,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: jacoco-coverage
-          path: target/site/jacoco
+          path: '**/target/site/jacoco'
           retention-days: 14
 
       - name: Upload surefire reports
@@ -50,5 +50,5 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: surefire-reports
-          path: target/surefire-reports
+          path: '**/target/surefire-reports'
           retention-days: 14
