@@ -61,8 +61,8 @@
 
         <!-- 3rd party dependency versions -->
         <playwright.version>1.48.0</playwright.version>
-        <commons-pool2.version>2.12.1</commons-pool2.version>
-        <commons-io.version>2.17.0</commons-io.version>
+        <commons-pool2.version>2.13.0</commons-pool2.version>
+        <commons-io.version>2.20.0</commons-io.version>
         <spring-framework.version>6.2.16</spring-framework.version>
         <transmittable-thread-local.version>2.14.5</transmittable-thread-local.version>
 
