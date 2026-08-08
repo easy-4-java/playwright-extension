@@ -20,17 +20,39 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
 
+/**
+ * JVM shutdown hook that ensures the Playwright browser context pool is properly
+ * closed when the application terminates. This hook is registered as a daemon thread
+ * named {@code "playwright-shutdown-hook"} to perform graceful cleanup of browser
+ * resources during JVM shutdown.
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
+ * @see BrowserContextPooledObjectFactory
+ */
 @Slf4j
 public class PlaywrightHook extends Thread{
 
 	private BrowserContextPooledObjectFactory factory;
 	private long awaitTerminateMillis;
+
+	/**
+	 * Constructs a new Playwright shutdown hook.
+	 *
+	 * @param factory             the pooled object factory to close on shutdown, may be {@code null}
+	 * @param awaitTerminateMillis the maximum time in milliseconds to wait for termination
+	 */
 	public PlaywrightHook(BrowserContextPooledObjectFactory factory, long awaitTerminateMillis) {
 		this.setName("playwright-shutdown-hook");
 		this.factory = factory;
 		this.awaitTerminateMillis = awaitTerminateMillis;
 	}
 
+	/**
+	 * Executes the shutdown hook by closing the browser context pool factory.
+	 * If the factory is {@code null}, this method does nothing. Any exceptions
+	 * thrown during factory closure are logged and swallowed.
+	 */
 	@Override
 	public void run() {
 		if(Objects.nonNull(factory)){

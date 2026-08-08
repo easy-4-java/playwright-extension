@@ -17,31 +17,61 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * A {@link PooledObjectFactory} that creates, validates, activates, passivates, and destroys
+ * {@link BrowserContext} instances for use in an object pool. Each pooled browser context is
+ * backed by its own {@link Playwright} instance, which is tracked in a static map and closed
+ * when the browser context is destroyed or the factory is closed.
+ *
+ * <p>Supports two modes of operation:
+ * <ul>
+ *   <li><b>Incognito mode</b>: launches a headless browser and creates isolated contexts via
+ *       {@link BrowserType.LaunchOptions} and {@link Browser.NewContextOptions}.</li>
+ *   <li><b>Persistent mode</b>: launches a browser with a user data directory via
+ *       {@link BrowserType.LaunchPersistentContextOptions}, retaining cookies and storage.</li>
+ * </ul>
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
+ * @see BrowserContextPool
+ * @see PlaywrightBrowserType
+ */
 @Slf4j
 public class BrowserContextPooledObjectFactory implements PooledObjectFactory<BrowserContext>, AutoCloseable {
 
     /**
-     * Playwright管理容器
+     * Maps each pooled BrowserContext to its owning Playwright instance.
      */
     private static final Map<BrowserContext, Playwright> PLAYWRIGHT_MAP = new ConcurrentHashMap<>();
+
+    /**
+     * Maps each persistent BrowserContext to its user data directory for cleanup.
+     */
     private static final Map<BrowserContext, File> USER_DATA_DIR_MAP = new ConcurrentHashMap<>();
     /**
-     * 浏览器类型
+     * The browser type to launch (chromium, firefox, or webkit).
      */
     private PlaywrightBrowserType browserType = PlaywrightBrowserType.chromium;
     /**
-     * 无痕模式启动浏览器参数
+     * Launch options for incognito (non-persistent) browser mode.
      */
     private BrowserType.LaunchOptions launchOptions;
     /**
-     * 创建新的浏览器上下文参数
+     * Options for creating new incognito browser contexts.
      */
     private Browser.NewContextOptions newContextOptions = new Browser.NewContextOptions().setScreenSize(1920, 1080);
     /**
-     * 非无痕模式启动浏览器参数
+     * Launch options for persistent browser context mode (with user data directory).
      */
     private BrowserType.LaunchPersistentContextOptions launchPersistentOptions;
     private String userDataRootDir;
+    /**
+     * Constructs a factory for incognito (non-persistent) browser context creation.
+     *
+     * @param browserType      the browser engine to use, defaults to {@link PlaywrightBrowserType#chromium} if {@code null}
+     * @param launchOptions    the browser launch options, defaults to headless mode if {@code null}
+     * @param newContextOptions the context creation options, uses screen size 1920x1080 if {@code null}
+     */
     public BrowserContextPooledObjectFactory(PlaywrightBrowserType browserType,
                                              BrowserType.LaunchOptions launchOptions,
                                              Browser.NewContextOptions newContextOptions) {
@@ -58,6 +88,13 @@ public class BrowserContextPooledObjectFactory implements PooledObjectFactory<Br
         }
     }
 
+    /**
+     * Constructs a factory for persistent browser context creation with a user data directory.
+     *
+     * @param browserType           the browser engine to use, defaults to {@link PlaywrightBrowserType#chromium} if {@code null}
+     * @param launchPersistentOptions the persistent context launch options, defaults to headless mode if {@code null}
+     * @param userDataRootDir       the root directory for user data, defaults to {@code java.io.tmpdir} if blank
+     */
     public BrowserContextPooledObjectFactory(PlaywrightBrowserType browserType,
                                              BrowserType.LaunchPersistentContextOptions launchPersistentOptions,
                                              String userDataRootDir) {
@@ -77,10 +114,11 @@ public class BrowserContextPooledObjectFactory implements PooledObjectFactory<Br
     }
 
     /**
-     * 从池中取出一个池中物（playwright）时调用
-     * @param p a {@code PooledObject} wrapping the instance to be activated
+     * Called when a {@link BrowserContext} is borrowed from the pool. Clears cookies
+     * to ensure a clean state for the next consumer.
      *
-     * @throws Exception if there is a problem activating {@code obj}
+     * @param p a {@code PooledObject} wrapping the instance to be activated
+     * @throws Exception if there is a problem activating the object
      */
     @Override
     public void activateObject(PooledObject<BrowserContext> p) throws Exception {
@@ -92,10 +130,12 @@ public class BrowserContextPooledObjectFactory implements PooledObjectFactory<Br
     }
 
     /**
-     * 销毁一个池中物（playwright）时调用
-     * @param p a {@code PooledObject} wrapping the instance to be destroyed
+     * Called when a {@link BrowserContext} is being permanently removed from the pool.
+     * Cleans up browser context resources, removes the Playwright mapping, and closes
+     * the underlying Playwright instance.
      *
-     * @throws Exception if there is a problem destroying {@code obj}
+     * @param p a {@code PooledObject} wrapping the instance to be destroyed
+     * @throws Exception if there is a problem destroying the object
      */
     @Override
     public void destroyObject(PooledObject<BrowserContext> p) throws Exception {
@@ -113,6 +153,12 @@ public class BrowserContextPooledObjectFactory implements PooledObjectFactory<Br
         }
     }
 
+    /**
+     * Cleans up all resources associated with a browser context, including cookies,
+     * permissions, user data directories, and open pages.
+     *
+     * @param browserContext the browser context to clean up, may be {@code null}
+     */
     public void cleanupBrowserContext(BrowserContext browserContext) {
         if (Objects.isNull(browserContext)) {
             return;
@@ -143,8 +189,11 @@ public class BrowserContextPooledObjectFactory implements PooledObjectFactory<Br
     }
 
     /**
-     * 创建池中物（playwright）
-     * @return a new instance that can be served by the pool
+     * Creates a new {@link BrowserContext} by launching a Playwright browser. In incognito mode,
+     * a browser is launched and a new context is created. In persistent mode, a persistent context
+     * is created with a dedicated user data directory.
+     *
+     * @return a new {@link PooledObject} wrapping the created {@link BrowserContext}
      * @throws Exception if there is a problem creating a new instance
      */
     @Override
@@ -172,10 +221,11 @@ public class BrowserContextPooledObjectFactory implements PooledObjectFactory<Br
     }
 
     /**
-     * 归还一个池中物（playwright）时调用，不应该activateObject冲突
-     * @param p a {@code PooledObject} wrapping the instance to be passivated
+     * Called when a {@link BrowserContext} is returned to the pool. Clears cookies and
+     * closes all open pages to prepare the context for reuse.
      *
-     * @throws Exception if there is a problem passivating {@code obj}
+     * @param p a {@code PooledObject} wrapping the instance to be passivated
+     * @throws Exception if there is a problem passivating the object
      */
     @Override
     public void passivateObject(PooledObject<BrowserContext> p) throws Exception {
@@ -191,12 +241,12 @@ public class BrowserContextPooledObjectFactory implements PooledObjectFactory<Br
     }
 
     /**
-     * 检测对象是否"有效";Pool中不能保存无效的"对象",因此"后台检测线程"会周期性的检测Pool中"对象"的有效性,如果对象无效则会导致此对象从Pool中移除,并destroy;此外在调用者从Pool获取一个"对象"时,也会检测"对象"的有效性,确保不能讲"无效"的对象输出给调用者;当调用者使用完毕将"对象归还"到Pool时,仍然会检测对象的有效性.所谓有效性,就是此"对象"的状态是否符合预期,是否可以对调用者直接使用;如果对象是Socket,那么它的有效性就是socket的通道是否畅通/阻塞是否超时等.
-     * 这里若要检测，需要在PoolConfig中配置检测项目。
-     * true：检测正常，符合预期；false：异常，销毁对象
-     * @param p a {@code PooledObject} wrapping the instance to be validated
+     * Validates whether a {@link BrowserContext} is still usable. In incognito mode,
+     * checks that the context is non-null and the underlying browser is still connected.
+     * In persistent mode, only checks for non-null.
      *
-     * @return {@code false} if this object is not currently valid and should be dropped from the pool, {@code true} otherwise.
+     * @param p a {@code PooledObject} wrapping the instance to be validated
+     * @return {@code true} if the object is valid and can be served, {@code false} otherwise
      */
     @Override
     public boolean validateObject(PooledObject<BrowserContext> p) {
@@ -211,6 +261,12 @@ public class BrowserContextPooledObjectFactory implements PooledObjectFactory<Br
         return isValidated;
     }
 
+    /**
+     * Closes all Playwright instances and cleans up all browser contexts managed by this factory.
+     * This method is idempotent and safe to call multiple times.
+     *
+     * @throws Exception if an error occurs during cleanup
+     */
     @Override
     public void close() throws Exception {
         PLAYWRIGHT_MAP.forEach((browserContext, playwright) -> {

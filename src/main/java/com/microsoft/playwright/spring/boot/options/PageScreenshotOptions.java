@@ -13,6 +13,15 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Configuration options for taking page-level screenshots.
+ * Wraps Playwright's {@link com.microsoft.playwright.Page.ScreenshotOptions} with a
+ * Spring-friendly POJO that supports property binding and fluent chained setters.
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
+ * @see com.microsoft.playwright.Page.ScreenshotOptions
+ */
 @Accessors(chain = true)
 @Data
 public class PageScreenshotOptions {
@@ -87,6 +96,12 @@ public class PageScreenshotOptions {
      */
     public ScreenshotType type = ScreenshotType.PNG;
 
+    /**
+     * Converts this configuration object into a Playwright {@link Page.ScreenshotOptions} instance.
+     * Quality is only applied when the screenshot type is not PNG.
+     *
+     * @return a new {@link Page.ScreenshotOptions} populated with non-null values from this configuration
+     */
     public Page.ScreenshotOptions toOptions(){
         OptionMapper map = OptionMapper.get().alwaysApplyingWhenNonNull();
         Page.ScreenshotOptions options = new Page.ScreenshotOptions();

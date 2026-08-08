@@ -8,6 +8,15 @@ import lombok.Data;
 import lombok.experimental.Accessors;
 import com.microsoft.playwright.spring.boot.options.OptionMapper;
 
+/**
+ * Configuration options for page navigation.
+ * Wraps Playwright's {@link com.microsoft.playwright.Page.NavigateOptions} with a
+ * Spring-friendly POJO that supports property binding and fluent chained setters.
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
+ * @see com.microsoft.playwright.Page.NavigateOptions
+ */
 @Accessors(chain = true)
 @Data
 public class PageNavigateOptions {
@@ -36,6 +45,11 @@ public class PageNavigateOptions {
      */
     public WaitUntilState waitUntil = WaitUntilState.NETWORKIDLE;
 
+    /**
+     * Converts this configuration object into a Playwright {@link Page.NavigateOptions} instance.
+     *
+     * @return a new {@link Page.NavigateOptions} populated with non-null values from this configuration
+     */
     public Page.NavigateOptions toOptions(){
         OptionMapper map = OptionMapper.get().alwaysApplyingWhenNonNull();
         Page.NavigateOptions options = new Page.NavigateOptions();

@@ -14,6 +14,16 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Configuration options for launching a browser with a persistent user data directory.
+ * Wraps Playwright's {@link com.microsoft.playwright.BrowserType.LaunchPersistentContextOptions}
+ * with a Spring-friendly POJO that supports property binding and fluent chained setters.
+ * Persistent context retains cookies, local storage, and other browser state across sessions.
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
+ * @see com.microsoft.playwright.BrowserType.LaunchPersistentContextOptions
+ */
 @Accessors(chain = true)
 @Data
 public class BrowserLaunchPersistentOptions {
@@ -277,6 +287,12 @@ public class BrowserLaunchPersistentOptions {
      */
     public ViewportSize viewportSize;
 
+    /**
+     * Converts this configuration object into a Playwright
+     * {@link BrowserType.LaunchPersistentContextOptions} instance.
+     *
+     * @return a new {@link BrowserType.LaunchPersistentContextOptions} populated with non-null values
+     */
     public BrowserType.LaunchPersistentContextOptions toOptions(){
         OptionMapper map = OptionMapper.get().alwaysApplyingWhenNonNull();
         BrowserType.LaunchPersistentContextOptions options = new BrowserType.LaunchPersistentContextOptions();

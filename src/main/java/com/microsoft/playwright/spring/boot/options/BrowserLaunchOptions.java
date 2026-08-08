@@ -11,6 +11,15 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Configuration options for launching a new browser instance in incognito (non-persistent) mode.
+ * Wraps Playwright's {@link com.microsoft.playwright.BrowserType.LaunchOptions} with a
+ * Spring-friendly POJO that supports property binding and fluent chained setters.
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
+ * @see com.microsoft.playwright.BrowserType.LaunchOptions
+ */
 @Accessors(chain = true)
 @Data
 public class BrowserLaunchOptions {
@@ -103,6 +112,11 @@ public class BrowserLaunchOptions {
      */
     public Path tracesDir;
 
+    /**
+     * Converts this configuration object into a Playwright {@link BrowserType.LaunchOptions} instance.
+     *
+     * @return a new {@link BrowserType.LaunchOptions} populated with non-null values from this configuration
+     */
     public BrowserType.LaunchOptions toOptions() {
         OptionMapper map = OptionMapper.get().alwaysApplyingWhenNonNull();
         BrowserType.LaunchOptions options = new BrowserType.LaunchOptions();

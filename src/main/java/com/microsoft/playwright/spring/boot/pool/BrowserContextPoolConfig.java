@@ -6,6 +6,16 @@ import com.microsoft.playwright.spring.boot.options.OptionMapper;
 
 import java.time.Duration;
 
+/**
+ * Configuration POJO for the {@link BrowserContextPool}. Exposes all Apache Commons Pool2
+ * {@link GenericObjectPoolConfig} settings with a Spring-friendly interface that supports
+ * property binding via {@code @ConfigurationProperties}.
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
+ * @see BrowserContextPool
+ * @see org.apache.commons.pool2.impl.GenericObjectPoolConfig
+ */
 @Data
 public class BrowserContextPoolConfig {
 
@@ -43,6 +53,11 @@ public class BrowserContextPoolConfig {
 
     private boolean testWhileIdle = GenericObjectPoolConfig.DEFAULT_TEST_WHILE_IDLE;
 
+    /**
+     * Converts this configuration POJO into an Apache Commons Pool2 {@link GenericObjectPoolConfig} instance.
+     *
+     * @return a new {@link GenericObjectPoolConfig} populated with the values from this configuration
+     */
     public GenericObjectPoolConfig toPoolConfig(){
         OptionMapper map = OptionMapper.get().alwaysApplyingWhenNonNull();
         GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();

@@ -14,6 +14,15 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Configuration options for creating a new incognito browser context.
+ * Wraps Playwright's {@link com.microsoft.playwright.Browser.NewContextOptions} with a
+ * Spring-friendly POJO that supports property binding and fluent chained setters.
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
+ * @see com.microsoft.playwright.Browser.NewContextOptions
+ */
 @Accessors(chain = true)
 @Data
 public class BrowserNewContextOptions {
@@ -203,6 +212,11 @@ public class BrowserNewContextOptions {
      */
     public ViewportSize viewportSize;
 
+    /**
+     * Converts this configuration object into a Playwright {@link Browser.NewContextOptions} instance.
+     *
+     * @return a new {@link Browser.NewContextOptions} populated with non-null values from this configuration
+     */
     public Browser.NewContextOptions toOptions(){
         OptionMapper map = OptionMapper.get().alwaysApplyingWhenNonNull();
         Browser.NewContextOptions options = new Browser.NewContextOptions();

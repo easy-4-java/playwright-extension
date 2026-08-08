@@ -7,6 +7,15 @@ import com.microsoft.playwright.spring.boot.options.OptionMapper;
 
 import java.util.Map;
 
+/**
+ * Configuration options for connecting to an existing browser instance via WebSocket.
+ * Wraps Playwright's {@link com.microsoft.playwright.BrowserType.ConnectOptions} with
+ * a Spring-friendly POJO that supports property binding and fluent chained setters.
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ * @since 3.0.0
+ * @see com.microsoft.playwright.BrowserType.ConnectOptions
+ */
 @Accessors(chain = true)
 @Data
 public class BrowserConnectOptions {
@@ -25,6 +34,11 @@ public class BrowserConnectOptions {
      */
     public Double timeout = 0.0;
 
+    /**
+     * Converts this configuration object into a Playwright {@link BrowserType.ConnectOptions} instance.
+     *
+     * @return a new {@link BrowserType.ConnectOptions} populated with non-null values from this configuration
+     */
     public BrowserType.ConnectOptions toOptions() {
         OptionMapper map = OptionMapper.get().alwaysApplyingWhenNonNull();
         BrowserType.ConnectOptions options = new BrowserType.ConnectOptions();
