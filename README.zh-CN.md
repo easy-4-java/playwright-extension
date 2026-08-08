@@ -47,7 +47,7 @@ playwright-extension 是基于官方 Microsoft Playwright Java 库（包命名�
 | 能力                                                | 状态       | 主要 API                                                              |
 | :-------------------------------------------------- | :--------- | :-------------------------------------------------------------------- |
 | 浏览器上下文池化                                    | 已实现     | `BrowserContextPool`（继承 `GenericObjectPool<BrowserContext>`）      |
-| 池配置                                              | 已实现     | `BrowserContextPoolConfig`（commons-pool2 配置 + `toPoolConfig()`）   |
+| 池配置                                              | 已实现     | `BrowserContextPoolConfig`（commons-pool2 | 2.13.0配置 + `toPoolConfig()`）   |
 | 上下文工厂（普通启动）                              | 已实现     | `BrowserContextPooledObjectFactory(PlaywrightBrowserType, LaunchOptions, NewContextOptions)`；默认无头、1920 x 1080 |
 | 上下文工厂（持久化启动）                            | 已实现     | `BrowserContextPooledObjectFactory(PlaywrightBrowserType, LaunchPersistentContextOptions, String userDataRootDir)`；默认 `java.io.tmpdir` |
 | Cookie / 滑块 / 页面工具                            | 已实现     | `PlaywrightUtil`（`getCookies`、`clearLocalStorage`、`slide`、`closePage` 等） |
@@ -64,7 +64,7 @@ playwright-extension 是基于官方 Microsoft Playwright Java 库（包命名�
 | JDK           | 8                        |
 | Maven         | 3.0+（已内置 wrapper）    |
 | Playwright    | 1.46.0                   |
-| commons-pool2 | 2.12.0                   |
+| commons-pool2 | 2.13.0|commons-pool2 | 2.13.0                   |
 | spring-core   | 5.3.39（运行时工具）      |
 
 easy4j 项目的版本线：
@@ -160,7 +160,7 @@ factory.close(); // 关闭所有池化 Playwright 实例
 | 启动选项             | `BrowserType.LaunchOptions`（例如 `setHeadless(true)`）               | 无头                 |
 | 上下文选项           | `Browser.NewContextOptions`                                           | 屏幕 1920 x 1080     |
 | 持久化启动           | `BrowserType.LaunchPersistentContextOptions` + `userDataRootDir`      | `java.io.tmpdir`     |
-| 池大小 / 驱逐        | `BrowserContextPoolConfig`（maxTotal/maxIdle/minIdle/驱逐策略等）      | commons-pool2 默认值 |
+| 池大小 / 驱逐        | `BrowserContextPoolConfig`（maxTotal/maxIdle/minIdle/驱逐策略等）      | commons-pool2 | 2.13.0默认值 |
 | 下载主机             | `PlaywrightInstall(browserContextPool, downloadHost)` → `PLAYWRIGHT_DOWNLOAD_HOST` | —          |
 
 ## 8. 核心用法 / API
