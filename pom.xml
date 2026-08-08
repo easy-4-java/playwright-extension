@@ -164,6 +164,7 @@
         <module>playwright-extension-image</module>
         <module>playwright-extension-pdf</module>
         <module>playwright-extension-task</module>
+        <module>playwright-extension-render</module>
         <module>playwright-extension-spring</module>
     </modules>
 
