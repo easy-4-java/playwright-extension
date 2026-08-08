@@ -13,7 +13,22 @@
 
     <artifactId>playwright-extension-render</artifactId>
     <name>${project.groupId}:${project.artifactId}</name>
-    <description>Render pipeline for playwright-extension: 6 strategies + page lifecycle + capture services (zero Spring dependency)</description>
+    <description>Render pipeline lifted from ddd4j-cloud-cmpt-playwright: 6 strategies + page lifecycle + suppliers + checkers (Spring-friendly)</description>
+
+    <properties>
+        <!-- Original ddd4j-cloud-cmpt-playwright dependencies, declared optional so
+             users can opt-in to Redis / Sequence / hitool features. -->
+        <pdfbox.version>3.0.3</pdfbox.version>
+        <thumbnailator.version>0.4.20</thumbnailator.version>
+        <caffeine.version>3.1.8</caffeine.version>
+        <commons-collections4.version>4.4</commons-collections4.version>
+        <commons-exec.version>1.4.0</commons-exec.version>
+        <commons-lang3.version>3.17.0</commons-lang3.version>
+        <fastjson2.version>2.0.64</fastjson2.version>
+        <guava.version>33.4.0-jre</guava.version>
+        <hutool.version>5.8.32</hutool.version>
+        <jakarta-annotation-api.version>2.1.1</jakarta-annotation-api.version>
+    </properties>
 
     <dependencies>
         <!-- Internal modules -->
@@ -32,33 +47,129 @@
             <artifactId>playwright-extension-image</artifactId>
             <version>${revision}</version>
         </dependency>
+        <dependency>
+            <groupId>io.github.easy4j</groupId>
+            <artifactId>playwright-extension-pdf</artifactId>
+            <version>${revision}</version>
+        </dependency>
 
-        <!-- Playwright SDK -->
+        <!-- Playwright SDK (provided by starter normally, declared here for standalone use) -->
         <dependency>
             <groupId>com.microsoft.playwright</groupId>
             <artifactId>playwright</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+        </dependency>
 
-        <!-- commons-io for FilenameUtils -->
+        <!-- PDF / image manipulation -->
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>${pdfbox.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.coobird</groupId>
+            <artifactId>thumbnailator</artifactId>
+            <version>${thumbnailator.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>${caffeine.version}</version>
+        </dependency>
+
+        <!-- Apache Commons -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>${commons-collections4.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-exec</artifactId>
+            <version>${commons-exec.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang3.version}</version>
+        </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
 
-        <!-- Lombok (provided) -->
+        <!-- JSON (for parsing Base64 param) -->
+        <dependency>
+            <groupId>com.alibaba.fastjson2</groupId>
+            <artifactId>fastjson2</artifactId>
+            <version>${fastjson2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+
+        <!-- Hutool (UrlBuilder / UrlQuery / Base64 used by AbstractPlaywrightRenderStrategy) -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>${hutool.version}</version>
+        </dependency>
+
+        <!-- Jakarta annotations (@Resource) -->
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+            <version>${jakarta-annotation-api.version}</version>
+        </dependency>
+
+        <!-- Servlet API (used by BrowserUtil for cookie copying) -->
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>6.0.0</version>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Spring Boot autoconfigure (PlaywrightRenderProperties / PlaywrightRenderConfiguration) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+            <version>3.2.12</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+            <version>3.2.12</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>6.1.13</version>
+        </dependency>
+
+        <!-- Original private dependencies replaced by in-module shims:
+             - hitool ByteUnitFormat / StringUtils / DateFormats  → inline + Spring's StringUtils
+             - io.ddd4j.boot.core.sequence.Sequence                → shim interface in render module
+             - RedisOperationTemplate / RedisKey                   → shim interface in render module
+             The Spring Boot starter provides concrete implementations. -->
+
+        <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
         </dependency>
-
-        <!-- SLF4J API -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
 
-        <!-- Test dependencies -->
+        <!-- Test -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -67,16 +178,6 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-junit-jupiter</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

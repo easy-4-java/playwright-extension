@@ -1,37 +1,33 @@
-/*
- * Copyright (c) 2018, Loong Wan (https://github.com/loong10k).
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
 package io.github.easy4j.playwright.render.enums;
 
 import lombok.Getter;
 
 /**
- * Lifecycle state of a render task / page.
- *
- * @author [@Loong Wan](https://github.com/loong10k)
- * @since 1.0.0
+ * 渲染状态
  */
 @Getter
 public enum RenderState {
-    WAITING(0, "waiting"),
-    GENERATING(1, "generating"),
-    SUCCESS(2, "success"),
-    FAIL(3, "fail");
 
-    private final int state;
-    private final String desc;
+    /**
+     * 等待中
+     */
+    WAITING(0, "等待中"),
+    /**
+     * 生成中
+     */
+    GENERATING(1, "生成中"),
+    /**
+     * 生成成功
+     */
+    SUCCESS(2, "生成成功"),
+    /**
+     * 生成失败
+     */
+    FAIL(3, "生成失败")
+    ;
+
+    private int state ;
+    private String desc ;
 
     RenderState(int state, String desc) {
         this.state = state;
@@ -39,11 +35,12 @@ public enum RenderState {
     }
 
     public static RenderState getRenderState(int state) {
-        for (RenderState rs : values()) {
-            if (rs.state == state) {
-                return rs;
+        for (RenderState renderState : RenderState.values()) {
+            if (renderState.getState() == state) {
+                return renderState;
             }
         }
         return null;
     }
+
 }

@@ -1,47 +1,75 @@
-/*
- * Copyright (c) 2018, Loong Wan (https://github.com/loong10k).
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
 package io.github.easy4j.playwright.render.strategy;
 
+import io.github.easy4j.playwright.render.bo.PageRenderBO;
 import io.github.easy4j.playwright.render.bo.WkhtmlRenderBO;
-import io.github.easy4j.playwright.render.capture.CaptureService;
-import io.github.easy4j.playwright.render.config.RenderConfig;
-import io.github.easy4j.playwright.render.config.TaskIdGenerator;
+import io.github.easy4j.playwright.render.enums.RenderState;
 import io.github.easy4j.playwright.render.enums.RenderType;
+import io.github.easy4j.playwright.render.exception.TaskRuntimeException;
+import io.github.easy4j.playwright.render.vo.WkhtmlRenderResultVO;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
- * Screenshot → single PDF (each screenshot becomes a PDF page).
- *
- * <p>The actual PDF merge is performed by the starter-bound Suppliers (in the
- * PDF module) so this render module stays PDFBox-free. The starter wires the
- * appropriate {@code PageScreenshotMergeToPdfSupplier} into the strategy via
- * the {@code doPacking} override.</p>
- *
- * @author [@Loong Wan](https://github.com/loong10k)
- * @since 1.0.0
+ * Playwright 渲染引擎将 HTML 渲染为 PDF 和各种图像格式
  */
+@Slf4j
 public class WkhtmlToPdfBufferRenderStrategy extends WkhtmlToImageBufferRenderStrategy {
-
-    public WkhtmlToPdfBufferRenderStrategy(RenderConfig config,
-                                              TaskIdGenerator taskIdGenerator,
-                                              CaptureService captureService) {
-        super(config, taskIdGenerator, captureService);
-    }
 
     @Override
     public RenderType getRenderType() {
         return RenderType.TO_PDF_BUFFER;
     }
+
+    /**
+     * 定义一个图片合并为PDF方法
+     * @param renderBO 渲染参数
+     * @param screenshots 截图列表
+     * @return 合并后的PDF文件
+     */
+    @Override
+    public WkhtmlRenderResultVO doPacking(WkhtmlRenderBO renderBO, List<PageRenderBO> screenshots) throws IOException {
+        if (CollectionUtils.isEmpty(screenshots)) {
+            return new WkhtmlRenderResultVO()
+                    .setRenderState(RenderState.FAIL)
+                    .setRenderFailedReason("PDF保存全部失败，参数可能异常，请重试！")
+                    .setFileSize(0L);
+        }
+        return this.mergeScreenshotsToPDF(renderBO, screenshots).join();
+    }
+
+    protected CompletableFuture<WkhtmlRenderResultVO> mergeScreenshotsToPDF(WkhtmlRenderBO renderBO,
+                                                                    List<PageRenderBO> screenshots) {
+        return this.mergeScreenshotsToPDF(renderBO, screenshots, (pdDocument, renderList) -> {
+            String pdfFileName = "document_" + renderBO.getTaskId() + ".pdf";
+            log.debug("Merging screenshots to PDF: {}", pdfFileName);
+            // 使用缓冲输出流保存文件
+            try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+                pdDocument.save(outputStream);
+                if(screenshots.size() != pdDocument.getNumberOfPages()){
+                    return new WkhtmlRenderResultVO()
+                            .setRenderState(RenderState.FAIL)
+                            .setRenderFailedReason("PDF页码与截图数不一致，截图丢失！")
+                            .setFileName(pdfFileName)
+                            .setFileBuffer(outputStream.toByteArray())
+                            .setFileSize(((long)(outputStream.size() / 1024L)));
+                }
+                return new WkhtmlRenderResultVO()
+                        .setRenderState(RenderState.SUCCESS)
+                        .setFileName(pdfFileName)
+                        .setFileBuffer(outputStream.toByteArray())
+                        .setFileSize(((long)(outputStream.size() / 1024L)));
+            } catch (IOException e) {
+                throw new TaskRuntimeException("Failed to merge PDF File : " + pdfFileName, e);
+            }
+        });
+    }
+
+
+
+
 }

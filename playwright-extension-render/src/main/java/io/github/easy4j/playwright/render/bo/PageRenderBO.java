@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2018, Loong Wan (https://github.com/loong10k).
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
 package io.github.easy4j.playwright.render.bo;
 
 import io.github.easy4j.playwright.render.enums.CheckState;
@@ -24,49 +9,95 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Per-page render state. Domain-specific fields from the original
- * {@code PageRenderBO} (schoolCode, gradeCode, classCode, stuId) are removed;
- * callers needing them should subclass.
- *
- * @author [@Loong Wan](https://github.com/loong10k)
- * @since 1.0.0
+ * 截图缓存信息
  */
-@Data
 @Accessors(chain = true)
+@Data
 public class PageRenderBO {
 
-    /** Original position in the render request. */
+    /**
+     * 原始序号
+     */
     private int index;
-    /** Caller-supplied unique id; used as the state-store sub-key. */
+    /**
+     * 唯一ID（学校代码 + 雪花算法序列值）
+     */
     private String uniqueId;
-    /** Optional background image URL for similarity check. */
+    /**
+     * 学校代码
+     */
+    private String schoolCode;
+    /**
+     * 年级代码
+     */
+    private String gradeCode;
+    /**
+     * 班级代码
+     */
+    private String classCode;
+    /**
+     * 学生ID
+     */
+    private String stuId;
+    /**
+     * 背景图地址
+     */
     private String bgUrl;
-    /** Target URL of this page. */
+    /**
+     * 原始请求URL
+     */
     private String url;
-    /** Output file name (e.g. {@code "0.png"}). */
+    /**
+     * 文件名称
+     */
     private String name;
-    /** Whether this page should be written to disk. */
+    /**
+     * 是否保存到文件
+     */
     private Boolean toFile;
-    /** On-disk output path (when writeToFile = true). */
+    /**
+     * 文件存储路径
+     */
     private String path;
-    /** Captured image / PDF size in bytes. */
+    /**
+     * 文件大小
+     */
     private Long fileSize;
-    /** In-memory captured bytes (when writeToFile = false). */
+    /**
+     * 截图缓存
+     */
     private byte[] buffer;
-    /** Internal: set by event listeners when a tracked resource fails. */
+    /**
+     * 是否需要重新加载
+     */
     private boolean needReload;
-    /** Internal: whether the current iteration is a reload. */
+    /**
+     * 当前是否是在重新加载
+     */
     private boolean reload;
-    /** Current reload timeout (ms); grows on each retry. */
+    /**
+     * 重新超时时间（初次使用全局配置，重试会计算新的超时时间）
+     */
     private Double reloadTimeout;
-    /** Per-page quality check state. */
+    /**
+     * 当前页检查状态
+     */
     private CheckState checkState;
-    /** Per-page quality check failure reason. */
+    /**
+     * 当前页检查失败原因
+     */
     private String checkFailedReason;
-    /** Per-page render state. */
+    /**
+     * 当前页渲染状态
+     */
     private RenderState renderState;
-    /** Per-page render failure reason. */
+    /**
+     * 当前页渲染失败原因
+     */
     private String renderFailedReason;
-    /** Per-page failed-resource status codes (url → HTTP status). */
+    /**
+     * 当前页资源加载状态
+     */
     private Map<String, Integer> resourceLoadState = new HashMap<>();
 }
+
