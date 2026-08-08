@@ -128,7 +128,7 @@ abstract class TaskStateStoreContractTest {
 
         // 批量写入 p3=WAITING, 应不破坏 p1/p2
         store.setAllStates("task-bulk",
-            Map.of("p3", "WAITING"),
+            Collections.singletonMap("p3", "WAITING"),
             Duration.ofDays(2));
 
         Map<String, String> after = store.getAllStates("task-bulk");
@@ -167,7 +167,7 @@ abstract class TaskStateStoreContractTest {
     void nullSafety_nullTaskId() {
         TaskStateStore store = newStore();
         assertDoesNotThrow(() -> store.setState(null, "k", "v"));
-        assertDoesNotThrow(() -> store.setAllStates(null, Map.of("k", "v"), Duration.ofDays(1)));
+        assertDoesNotThrow(() -> store.setAllStates(null, Collections.singletonMap("k", "v"), Duration.ofDays(1)));
         assertDoesNotThrow(() -> store.getState(null, "k"));
         assertDoesNotThrow(() -> store.clear(null));
         assertDoesNotThrow(() -> store.expire(null, Duration.ofDays(1)));
@@ -195,7 +195,7 @@ abstract class TaskStateStoreContractTest {
     @DisplayName("Null-safety: null ttl is allowed (means never expire)")
     void nullSafety_nullTtl() {
         TaskStateStore store = newStore();
-        assertDoesNotThrow(() -> store.setAllStates("t1", Map.of("k", "v"), null));
+        assertDoesNotThrow(() -> store.setAllStates("t1", Collections.singletonMap("k", "v"), null));
         assertDoesNotThrow(() -> store.expire("t1", null));
     }
 
