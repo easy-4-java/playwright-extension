@@ -17,7 +17,7 @@
 
     <properties>
         <!-- Caffeine is needed only by the background-similarity checker (optional) -->
-        <caffeine.version>3.1.8</caffeine.version>
+        <caffeine.version>2.9.3</caffeine.version>
         <thumbnailator.version>0.4.20</thumbnailator.version>
         <checker-qual.version>3.42.0</checker-qual.version>
     </properties>

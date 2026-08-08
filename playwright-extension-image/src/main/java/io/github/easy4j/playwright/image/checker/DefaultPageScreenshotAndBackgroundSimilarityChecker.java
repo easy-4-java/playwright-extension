@@ -84,7 +84,7 @@ public class DefaultPageScreenshotAndBackgroundSimilarityChecker implements Page
                 .build(new CacheLoader<String, Optional<BufferedImage>>() {
                     @Override
                     public Optional<BufferedImage> load(String imageUrl) throws Exception {
-                        if (imageUrl == null || imageUrl.isBlank()) {
+                        if (imageUrl == null || imageUrl.trim().isEmpty()) {
                             return Optional.empty();
                         }
                         try {
@@ -109,7 +109,7 @@ public class DefaultPageScreenshotAndBackgroundSimilarityChecker implements Page
     @Override
     public boolean beforePdfPageAdd(CheckContext context, BufferedImage pdfImage, ImagePageSize pageSize) {
         String backgroundUrl = context.backgroundUrl();
-        if (backgroundUrl == null || backgroundUrl.isBlank()) {
+        if (backgroundUrl == null || backgroundUrl.trim().isEmpty()) {
             return Boolean.TRUE;
         }
         if (Objects.isNull(pdfImage)) {
