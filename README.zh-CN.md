@@ -2,7 +2,7 @@
 
 [English](./README.md) | [简体中文](./README.zh-CN.md)
 
-[![Java](https://img.shields.io/badge/Java-21-orange)](https://github.com/easy-4-java/playwright-extension) [![License](https://img.shields.io/badge/license-Apache%202.0-green)](https://www.apache.org/licenses/LICENSE-2.0.txt)
+[![Java](https://img.shields.io/badge/Java-17-orange)](https://github.com/easy-4-java/playwright-extension) [![License](https://img.shields.io/badge/license-Apache%202.0-green)](https://www.apache.org/licenses/LICENSE-2.0.txt)
 
 playwright-extension 是基于官方 Microsoft Playwright Java 库（包命名空间 com.microsoft.playwright.spring.boot）的轻量池化工具层。
 
@@ -61,11 +61,11 @@ playwright-extension 是基于官方 Microsoft Playwright Java 库（包命名�
 
 | 要求          | 版本                     |
 | :------------ | :----------------------- |
-| JDK           | 8+                       |
+| JDK           | 17                       |
 | Maven         | 3.0+（已内置 wrapper）    |
-| Playwright    | 1.46.0                   |
-| commons-pool2 | 2.11.1                   |
-| spring-core   | 5.2.15.RELEASE（运行时工具）|
+| Playwright    | 1.48.0                   |
+| commons-pool2 | 2.12.1                   |
+| spring-core   | 6.2.16（运行时工具）      |
 
 easy4j 项目的版本线：
 
