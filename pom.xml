@@ -161,6 +161,7 @@
 
     <modules>
         <module>playwright-extension-core</module>
+        <module>playwright-extension-task</module>
         <module>playwright-extension-spring</module>
     </modules>
 
