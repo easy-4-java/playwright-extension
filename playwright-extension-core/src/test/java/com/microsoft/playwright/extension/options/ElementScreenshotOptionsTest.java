@@ -51,7 +51,7 @@ class ElementScreenshotOptionsTest {
                 .setCaret(ScreenshotCaret.HIDE)
                 .setMaskColor("#FF0000")
                 .setOmitBackground(true)
-                .setPath(Path.of("/tmp/screenshot.png"))
+                .setPath(java.nio.file.Paths.get("/tmp/screenshot.png"))
                 .setScale(ScreenshotScale.CSS)
                 .setTimeout(15000.0)
                 .setType(ScreenshotType.PNG);

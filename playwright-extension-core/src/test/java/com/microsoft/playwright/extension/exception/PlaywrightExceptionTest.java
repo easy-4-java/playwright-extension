@@ -53,7 +53,7 @@ class PlaywrightExceptionTest {
 
     @Test
     void shouldPreserveSerialVersionUID() throws NoSuchFieldException, IllegalAccessException {
-        var field = PlaywrightException.class.getDeclaredField("serialVersionUID");
+        java.lang.reflect.Field field = PlaywrightException.class.getDeclaredField("serialVersionUID");
         field.setAccessible(true);
         assertEquals(-7545341502620139031L, field.getLong(null));
     }

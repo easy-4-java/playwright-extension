@@ -51,24 +51,24 @@ class BrowserLaunchOptionsTest {
     @Test
     void shouldMapAllFieldsToLaunchOptions() {
         BrowserLaunchOptions opts = new BrowserLaunchOptions()
-                .setArgs(List.of("--no-sandbox"))
+                .setArgs(java.util.Collections.singletonList("--no-sandbox"))
                 .setChannel("chrome")
                 .setChromiumSandbox(false)
                 .setDevtools(false)
-                .setDownloadsPath(Path.of("/tmp/downloads"))
-                .setEnv(Map.of("KEY", "VALUE"))
-                .setExecutablePath(Path.of("/usr/bin/chromium"))
-                .setFirefoxUserPrefs(Map.of("key", (Object) "val"))
+                .setDownloadsPath(java.nio.file.Paths.get("/tmp/downloads"))
+                .setEnv(java.util.Collections.singletonMap("KEY", "VALUE"))
+                .setExecutablePath(java.nio.file.Paths.get("/usr/bin/chromium"))
+                .setFirefoxUserPrefs(java.util.Collections.singletonMap("key", (Object) "val"))
                 .setHandleSighup(true)
                 .setHandleSigint(true)
                 .setHandleSigterm(true)
                 .setHeadless(true)
                 .setIgnoreAllDefaultArgs(false)
-                .setIgnoreDefaultArgs(List.of("--mute-audio"))
+                .setIgnoreDefaultArgs(java.util.Collections.singletonList("--mute-audio"))
                 .setProxy(new Proxy("http://proxy:8080"))
                 .setSlowMo(50.0)
                 .setTimeout(60000.0)
-                .setTracesDir(Path.of("/tmp/traces"));
+                .setTracesDir(java.nio.file.Paths.get("/tmp/traces"));
         BrowserType.LaunchOptions result = opts.toOptions();
         assertNotNull(result);
     }
@@ -83,7 +83,7 @@ class BrowserLaunchOptionsTest {
     @Test
     void shouldSkipEmptyArgsList() {
         BrowserLaunchOptions opts = new BrowserLaunchOptions()
-                .setArgs(List.of());
+                .setArgs(java.util.Collections.emptyList());
         BrowserType.LaunchOptions result = opts.toOptions();
         assertNotNull(result);
     }
@@ -91,7 +91,7 @@ class BrowserLaunchOptionsTest {
     @Test
     void shouldSkipEmptyEnvMap() {
         BrowserLaunchOptions opts = new BrowserLaunchOptions()
-                .setEnv(Map.of());
+                .setEnv(java.util.Collections.emptyMap());
         BrowserType.LaunchOptions result = opts.toOptions();
         assertNotNull(result);
     }
@@ -99,7 +99,7 @@ class BrowserLaunchOptionsTest {
     @Test
     void shouldSkipEmptyFirefoxUserPrefs() {
         BrowserLaunchOptions opts = new BrowserLaunchOptions()
-                .setFirefoxUserPrefs(Map.of());
+                .setFirefoxUserPrefs(java.util.Collections.emptyMap());
         BrowserType.LaunchOptions result = opts.toOptions();
         assertNotNull(result);
     }
@@ -107,7 +107,7 @@ class BrowserLaunchOptionsTest {
     @Test
     void shouldSkipEmptyIgnoreDefaultArgs() {
         BrowserLaunchOptions opts = new BrowserLaunchOptions()
-                .setIgnoreDefaultArgs(List.of());
+                .setIgnoreDefaultArgs(java.util.Collections.emptyList());
         BrowserType.LaunchOptions result = opts.toOptions();
         assertNotNull(result);
     }

@@ -105,7 +105,7 @@ public class BrowserContextPooledObjectFactory implements PooledObjectFactory<Br
         } else {
             this.launchPersistentOptions = new BrowserType.LaunchPersistentContextOptions().setHeadless(true);
         }
-        if (userDataRootDir != null && !userDataRootDir.isBlank()) {
+        if (userDataRootDir != null && !userDataRootDir.trim().isEmpty()) {
             this.userDataRootDir = userDataRootDir;
         } else {
             this.userDataRootDir = System.getProperty("java.io.tmpdir");

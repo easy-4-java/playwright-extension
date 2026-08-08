@@ -164,7 +164,7 @@ class ThreadUtilsTest {
 
     @Test
     void shouldNotBeInstantiable() throws NoSuchMethodException {
-        var constructor = ThreadUtils.class.getDeclaredConstructor();
-        assertFalse(constructor.canAccess(null));
+        java.lang.reflect.Constructor<ThreadUtils> constructor = ThreadUtils.class.getDeclaredConstructor();
+        assertFalse(java.lang.reflect.Modifier.isPublic(constructor.getModifiers()));
     }
 }
