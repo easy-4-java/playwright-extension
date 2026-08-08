@@ -1,34 +1,41 @@
-/*
- * Copyright (c) 2018, Loong Wan (https://github.com/loong10k).
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
 package io.github.easy4j.playwright.render.strategy;
+
 
 import io.github.easy4j.playwright.render.bo.WkhtmlRenderBO;
 import io.github.easy4j.playwright.render.enums.RenderType;
+import io.github.easy4j.playwright.render.page.checker.PageScreenshotChecker;
 import io.github.easy4j.playwright.render.vo.WkhtmlRenderResultVO;
 
+import java.util.List;
+
 /**
- * Render strategy: converts a {@link WkhtmlRenderBO} into a
- * {@link WkhtmlRenderResultVO}.
- *
- * @author [@Loong Wan](https://github.com/loong10k)
- * @since 1.0.0
+ * Playwright 处理策略
  */
 public interface PlaywrightRenderStrategy<B extends WkhtmlRenderBO> {
 
+    /**
+     * 使用 Playwright 渲染引擎将 HTML 渲染为 PDF 和各种图像格式
+     * @param renderBO 渲染参数来源 BO
+     */
+    WkhtmlRenderResultVO render(B renderBO) throws Exception;
+
+    /**
+     * 自定义检查接口
+     * @param pageScreenshotCheckers 检查接口
+     */
+    void setPageScreenshotCheckers(List<PageScreenshotChecker> pageScreenshotCheckers);
+
+    /**
+     * 清理临时文件
+     * @param renderBO
+     * @param resultBO
+     */
+    void cleanTemporary(B renderBO, WkhtmlRenderResultVO resultBO);
+
+    /**
+     * 处理类型
+     * @return
+     */
     RenderType getRenderType();
 
-    WkhtmlRenderResultVO render(B renderBO) throws Exception;
 }

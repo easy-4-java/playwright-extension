@@ -1,49 +1,25 @@
-/*
- * Copyright (c) 2018, Loong Wan (https://github.com/loong10k).
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
 package io.github.easy4j.playwright.render.strategy;
 
 import io.github.easy4j.playwright.render.bo.PageRenderBO;
 import io.github.easy4j.playwright.render.bo.WkhtmlRenderBO;
-import io.github.easy4j.playwright.render.capture.CaptureService;
-import io.github.easy4j.playwright.render.config.RenderConfig;
-import io.github.easy4j.playwright.render.config.TaskIdGenerator;
+import io.github.easy4j.playwright.render.enums.RenderState;
 import io.github.easy4j.playwright.render.enums.RenderType;
+import io.github.easy4j.playwright.render.exception.TaskRuntimeException;
+import io.github.easy4j.playwright.render.vo.WkhtmlRenderResultVO;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 /**
- * Per-page PDF → merged PDF in memory.
- *
- * <p>Unlike {@link WkhtmlToPdfBufferRenderStrategy}, this strategy captures
- * each page as a single-page PDF (via {@link com.microsoft.playwright.Page#pdf}),
- * then the starter merges them with PDFBox's {@code PDFMergerUtility}.</p>
- *
- * @author [@Loong Wan](https://github.com/loong10k)
- * @since 1.0.0
+ * Playwright 渲染引擎将 HTML 渲染为 PDF 和各种图像格式
  */
+@Slf4j
 public class WkhtmlToPdfMergerBufferRenderStrategy extends AbstractPlaywrightRenderStrategy<WkhtmlRenderBO> {
-
-    private final CaptureService captureService;
-
-    public WkhtmlToPdfMergerBufferRenderStrategy(RenderConfig config,
-                                                    TaskIdGenerator taskIdGenerator,
-                                                    CaptureService captureService) {
-        super(config, taskIdGenerator);
-        this.captureService = captureService;
-    }
 
     @Override
     public RenderType getRenderType() {
@@ -51,32 +27,69 @@ public class WkhtmlToPdfMergerBufferRenderStrategy extends AbstractPlaywrightRen
     }
 
     @Override
-    protected List<PageRenderBO> doGenerate(WkhtmlRenderBO renderBO) {
-        return config.isAsync()
-                ? captureService.captureAsync(renderBO, config, renderBO.getUrls())
-                : captureService.captureSync(renderBO, config, renderBO.getUrls());
+    protected List<PageRenderBO> doGenerate(WkhtmlRenderBO renderBO) throws IOException {
+        log.debug("Generate PDF for urls: {}", renderBO.getUrls().stream().map(PageRenderBO::getUrl).collect(Collectors.toList()));
+        if(renderBO.isAsync()){
+            return this.pageToPdfFutureAsync(renderBO);
+        } else {
+            return this.pageToPdfFutureSync(renderBO);
+        }
     }
 
     @Override
-    protected io.github.easy4j.playwright.render.vo.WkhtmlRenderResultVO doPacking(
-            WkhtmlRenderBO renderBO, List<PageRenderBO> pages) {
-        // Minimal packing: return the first page's output as the merged result.
-        // Starter-bound Suppliers (PDF module's PagePdfMergeToPdfSupplier) perform the
-        // actual multi-PDF merge; this default keeps the render module PDFBox-free.
-        if (pages == null || pages.isEmpty()) {
-            return new io.github.easy4j.playwright.render.vo.WkhtmlRenderResultVO()
-                    .setRenderState(io.github.easy4j.playwright.render.enums.RenderState.FAIL)
-                    .setRenderFailedReason("PDF保存全部失败")
+    protected List<PageRenderBO> doCompress(WkhtmlRenderBO renderBO, List<PageRenderBO> pdfs) {
+        // 1、获取压缩质量，如果压缩质量不在范围内，则不压缩
+        Integer quality = renderBO.getQuality();
+        if((quality >= MAX_QUALITY || quality <= MIN_QUALITY)){
+            log.debug("Compressing pdf ignore. quality：{}", quality);
+            return pdfs;
+        }
+        // 2、异步压缩pdf
+        return pdfs;
+    }
+
+    @Override
+    protected WkhtmlRenderResultVO doPacking(WkhtmlRenderBO renderBO, List<PageRenderBO> pdfs) {
+        if (CollectionUtils.isEmpty(pdfs)) {
+            return new WkhtmlRenderResultVO()
+                    .setRenderState(RenderState.FAIL)
+                    .setRenderFailedReason("PDF保存全部失败，参数可能异常，请重试！")
                     .setFileSize(0L);
         }
-        PageRenderBO first = pages.get(0);
-        String fileName = "document_" + renderBO.getTaskId() + ".pdf";
-        return new io.github.easy4j.playwright.render.vo.WkhtmlRenderResultVO()
-                .setRenderState(io.github.easy4j.playwright.render.enums.RenderState.SUCCESS)
-                .setFileName(fileName)
-                .setFilePath(first.getPath())
-                .setFileBuffer(first.getBuffer())
-                .setFileSize(first.getFileSize())
-                .setPages(pages);
+        return this.mergePdfsToPDF(renderBO, pdfs).join();
     }
+
+    /**
+     * 定义一个PDF合并为PDF方法
+     * @param renderBO 渲染参数
+     * @param pdfs Pdf 列表
+     * @return 合并后的PDF文件
+     */
+    protected CompletableFuture<WkhtmlRenderResultVO> mergePdfsToPDF(WkhtmlRenderBO renderBO, List<PageRenderBO> pdfs) {
+        return this.mergePdfsToPDF(renderBO, pdfs, (mergePdf, renderList) -> {
+            // 设置合并生成pdf文件名称
+            String pdfFileName = "document_" + renderBO.getTaskId() + ".pdf";
+            try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+                mergePdf.setDestinationStream(outputStream);
+                // 使用主内存进行PDF合并处理
+                //mergePdf.mergeDocuments(MemoryUsageSetting.setupMainMemoryOnly());
+                // 或者使用磁盘临时文件进行处理
+                //mergePdf.mergeDocuments(MemoryUsageSetting.setupTempFileOnly());
+                // 或者结合使用主内存和磁盘临时文件进行处理（这里设置8MB）
+                //mergePdf.mergeDocuments(MemoryUsageSetting.setupMixed(8 * 1024 * 1024));
+                // Since v3.0.2
+                mergePdf.mergeDocuments(null);
+                byte[] bytes = outputStream.toByteArray();
+                // 返回合并后的pdf文件
+                return new WkhtmlRenderResultVO()
+                        .setRenderState(RenderState.SUCCESS)
+                        .setFileName(pdfFileName)
+                        .setFileBuffer(bytes)
+                        .setFileSize(((long)(bytes.length / 1024L)));
+            }  catch (IOException e) {
+                throw new TaskRuntimeException("Failed to merge PDF File : " + pdfFileName, e);
+            }
+        });
+    }
+
 }

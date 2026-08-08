@@ -1,73 +1,91 @@
-/*
- * Copyright (c) 2018, Loong Wan (https://github.com/loong10k).
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- */
 package io.github.easy4j.playwright.render.bo;
 
 import lombok.Data;
-import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.util.List;
 
 /**
- * Render request. Generalised from ddd4j-cloud-cmpt-playwright's
- * {@code WkhtmlRenderBO}: domain-specific fields (schoolCode, gradeCode, ...)
- * are removed — callers can attach extra metadata via {@link #param} or a
- * subclass.
- *
- * @author [@Loong Wan](https://github.com/loong10k)
- * @since 1.0.0
+ * 使用 Playwright 渲染引擎将 HTML 渲染为 PDF 和各种图像格式的参数
  */
 @Data
-@Accessors(chain = true)
 public class WkhtmlRenderBO implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
-    /** Render task id (filled by the strategy if blank). */
+    /**
+     * 渲染任务Id
+     */
     private String taskId;
-    /** Whether this render is a retry of a previous run. */
+    /**
+     * 本次渲染是否是重试
+     */
     private boolean retry;
-    /** Optional source file URL (used as a base PDF for retry fast-path). */
+    /**
+     * 文件路径（可作为 pdf 的基础文件，用来优化重试生成时，提高速度）
+     */
     private String fileUrl;
-    /** CSS selector of the element to capture; null = full-page. */
+    /**
+     * 截图元素的选择器，没设置，则对整个页面进行截图
+     */
     private String selector;
-    /** Image compression quality 1-100 (out-of-range skips compression). */
+    /**
+     * 图片压缩质量 1-100
+     */
     private Integer quality;
-    /** Whether to compress the resulting PDF. */
+    /**
+     * PDF是否进行压缩
+     */
     private Boolean compress;
-    /** Base64-encoded JSON with extra parameters (e.g. {@code report_urls}). */
+    /**
+     * Base64 编码的 JSON 格式的字符串
+     */
     private String param;
-    /** Whether to write to disk (true) or return buffer (false). */
+    /**
+     * 是否保存到文件
+     */
     private Boolean toFile;
-    /** Per-page render specs. */
+    /**
+     * 待渲染为为 PDF 和各种图像格式的 HTML URL 访问地址;多个使用,分割
+     */
     private List<PageRenderBO> urls;
-    /** PDF metadata: author / keywords / subject / title / creator. */
+    /**
+     * PDF 作者
+     */
     private String author;
+    /**
+     * PDF 关键字
+     */
     private String keywords;
+    /**
+     * PDF 主题
+     */
     private String subject;
+    /**
+     * PDF 标题
+     */
     private String title;
+    /**
+     * PDF 创建者
+     */
     private String creator;
-    /** PDF page size (LETTER / LEGAL / A0-A6). */
+    /**
+     * PDF 页面大小，LETTER, LEGAL, A0, A1, A2, A3, A4, A5, A6
+     */
     private String pageSize;
-    /** Whether to render each page concurrently (default true). */
+    /**
+     * 是否异步处理每页截图/生成PDF
+     */
     private boolean async = true;
-    /** Whether to continue processing remaining pages when one fails. */
+    /**
+     * 是否跳过失败的页面
+     */
     private boolean skipFail;
-    /** Max ratio of any single colour allowed in a screenshot (0-1). */
+    /**
+     * 判断页面截图最大单色占比
+     */
     private float maxSingleColorPercent = 0.95f;
-    /** Max similarity between screenshot and background image (0-1). */
+    /**
+     * 判断页面截图和背景图片是一样的最大相似度
+     */
     private float maxSimilarity = 0.75f;
+
 }
