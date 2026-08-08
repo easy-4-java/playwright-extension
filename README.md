@@ -52,7 +52,7 @@ Typical scenarios:
 | Capability                                          | Status      | Main API                                                              |
 | :-------------------------------------------------- | :---------- | :-------------------------------------------------------------------- |
 | Browser context pooling                             | Implemented | `BrowserContextPool` (extends `GenericObjectPool<BrowserContext>`)    |
-| Pool configuration                                  | Implemented | `BrowserContextPoolConfig` (commons-pool2 settings + `toPoolConfig()`) |
+| Pool configuration                                  | Implemented | `BrowserContextPoolConfig` (commons-pool2 | 2.13.0settings + `toPoolConfig()`) |
 | Context factory (normal launch)                     | Implemented | `BrowserContextPooledObjectFactory(PlaywrightBrowserType, LaunchOptions, NewContextOptions)`; defaults: headless, 1920 x 1080 |
 | Context factory (persistent launch)                 | Implemented | `BrowserContextPooledObjectFactory(PlaywrightBrowserType, LaunchPersistentContextOptions, String userDataRootDir)`; defaults to `java.io.tmpdir` |
 | Cookie / slider / page utilities                    | Implemented | `PlaywrightUtil` (`getCookies`, `clearLocalStorage`, `slide`, `closePage`, ...) |
@@ -69,7 +69,7 @@ Typical scenarios:
 | JDK                | 8+                         |
 | Maven              | 3.0+ (wrapper included)    |
 | Playwright         | 1.46.0                     |
-| commons-pool2      | 2.11.1                     |
+| commons-pool2 | 2.13.0     |commons-pool2 | 2.13.0                     |
 | spring-core        | 5.2.15.RELEASE (runtime utils) |
 
 Version lines of the easy4j project:
@@ -167,7 +167,7 @@ returns to the pool for reuse.
 | Launch options              | `BrowserType.LaunchOptions` (e.g. `setHeadless(true)`)               | headless               |
 | Context options             | `Browser.NewContextOptions`                                          | screen 1920 x 1080     |
 | Persistent launch           | `BrowserType.LaunchPersistentContextOptions` + `userDataRootDir`     | `java.io.tmpdir`       |
-| Pool size / eviction        | `BrowserContextPoolConfig` (maxTotal/maxIdle/minIdle/eviction policy, ...) | commons-pool2 defaults |
+| Pool size / eviction        | `BrowserContextPoolConfig` (maxTotal/maxIdle/minIdle/eviction policy, ...) | commons-pool2 | 2.13.0defaults |
 | Download host               | `PlaywrightInstall(browserContextPool, downloadHost)` → `PLAYWRIGHT_DOWNLOAD_HOST` | —            |
 
 ## 8. Core Usage / API
