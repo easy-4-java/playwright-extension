@@ -2,7 +2,7 @@
 
 [English](./README.md) | [简体中文](./README.zh-CN.md)
 
-[![Java](https://img.shields.io/badge/Java-17-orange)](https://github.com/easy-4-java/playwright-extension) [![License](https://img.shields.io/badge/license-Apache%202.0-green)](https://www.apache.org/licenses/LICENSE-2.0.txt)
+[![Java](https://img.shields.io/badge/Java-8-orange)](https://github.com/easy-4-java/playwright-extension) [![License](https://img.shields.io/badge/license-Apache%202.0-green)](https://www.apache.org/licenses/LICENSE-2.0.txt)
 
 playwright-extension is a thin, pooling-oriented utility layer on top of the official
 
@@ -66,11 +66,11 @@ Typical scenarios:
 
 | Requirement        | Version                    |
 | :----------------- | :------------------------- |
-| JDK                | 17                         |
+| JDK                | 8                          |
 | Maven              | 3.0+ (wrapper included)    |
-| Playwright         | 1.48.0                     |
-| commons-pool2      | 2.12.1                     |
-| spring-core        | 6.2.16 (runtime utils)     |
+| Playwright         | 1.46.0                     |
+| commons-pool2      | 2.12.0                     |
+| spring-core        | 5.3.39 (runtime utils)     |
 
 Version lines of the easy4j project:
 
