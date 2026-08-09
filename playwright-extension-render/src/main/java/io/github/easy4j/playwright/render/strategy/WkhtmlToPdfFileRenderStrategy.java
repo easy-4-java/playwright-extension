@@ -7,7 +7,6 @@ import io.github.easy4j.playwright.render.enums.RenderType;
 import io.github.easy4j.playwright.render.exception.TaskRuntimeException;
 import io.github.easy4j.playwright.render.vo.WkhtmlRenderResultVO;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.CollectionUtils;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -29,7 +28,7 @@ public class WkhtmlToPdfFileRenderStrategy extends WkhtmlToImageFileRenderStrate
 
     @Override
     public WkhtmlRenderResultVO doPacking(WkhtmlRenderBO renderBO, List<PageRenderBO> screenshots) throws IOException {
-        if (CollectionUtils.isEmpty(screenshots)) {
+        if ((screenshots == null || screenshots.isEmpty())) {
             return new WkhtmlRenderResultVO()
                     .setRenderState(RenderState.FAIL)
                     .setRenderFailedReason("PDF保存全部失败，参数可能异常，请重试！")
@@ -49,7 +48,7 @@ public class WkhtmlToPdfFileRenderStrategy extends WkhtmlToImageFileRenderStrate
         return this.mergeScreenshotsToPDF(renderBO, screenshots, (pdDocument, renderList) -> {
             String pdfFileName = "document_" + renderBO.getTaskId() + ".pdf";
             log.debug("Merging screenshots to PDF: {}", pdfFileName);
-            File pdfFile = new File(playwrightRenderProperties.getTmpDir(), pdfFileName);
+            File pdfFile = new File(renderOptions.getTmpDir(), pdfFileName);
             try (BufferedOutputStream outputStream = new BufferedOutputStream(Files.newOutputStream(pdfFile.toPath()), 2048)) {
                 pdDocument.save(outputStream);
                 if(screenshots.size() != pdDocument.getNumberOfPages()){

@@ -13,19 +13,15 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package io.github.easy4j.playwright.render.config;
+package io.github.easy4j.playwright.render.strategy;
 
 /**
- * Abstraction for generating per-render task IDs.
- *
- * <p>The original ddd4j-cloud-cmpt-playwright code injected
- * {@code io.ddd4j.boot.core.sequence.Sequence}; this interface lets the render
- * module stay free of that boot framework.</p>
+ * Simple ordering interface, replacing {@code org.springframework.core.Ordered}
+ * so the render module has zero Spring dependencies.
  *
  * @author [@Loong Wan](https://github.com/loong10k)
  * @since 1.0.0
  */
-@FunctionalInterface
-public interface TaskIdGenerator {
-    String next();
+public interface Ordered {
+    int getOrder();
 }

@@ -11,7 +11,6 @@ import io.github.easy4j.playwright.render.vo.WkhtmlRenderResultVO;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.io.FilenameUtils;
-import org.springframework.util.CollectionUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -134,7 +133,7 @@ public class WkhtmlToImageBufferRenderStrategy extends AbstractPlaywrightRenderS
 
     @Override
     public WkhtmlRenderResultVO doPacking(WkhtmlRenderBO renderBO, List<PageRenderBO> screenshots) throws IOException {
-        if (CollectionUtils.isEmpty(screenshots)) {
+        if ((screenshots == null || screenshots.isEmpty())) {
             return new WkhtmlRenderResultVO()
                     .setRenderState(RenderState.FAIL)
                     .setRenderFailedReason("截图全部失败，参数可能异常，请重试！")
@@ -160,7 +159,7 @@ public class WkhtmlToImageBufferRenderStrategy extends AbstractPlaywrightRenderS
                     .setFileBuffer(screenshot.getBuffer())
                     .setFileSize(screenshot.getFileSize()));
         }
-        return CompletableFuture.supplyAsync(new PageScreenshotMergeToZipOutputStreamSupplier(playwrightRenderProperties, renderBO, screenshots), dtpToImageZipExecutor);
+        return CompletableFuture.supplyAsync(new PageScreenshotMergeToZipOutputStreamSupplier(renderOptions, renderBO, screenshots), dtpToImageZipExecutor);
     }
 
 }

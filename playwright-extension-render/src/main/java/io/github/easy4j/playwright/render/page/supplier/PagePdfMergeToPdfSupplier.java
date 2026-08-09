@@ -1,6 +1,6 @@
 package io.github.easy4j.playwright.render.page.supplier;
 
-import io.github.easy4j.playwright.render.PlaywrightRenderProperties;
+import io.github.easy4j.playwright.render.strategy.RenderOptions;
 import io.github.easy4j.playwright.render.bo.PageRenderBO;
 import io.github.easy4j.playwright.render.bo.WkhtmlRenderBO;
 import io.github.easy4j.playwright.render.enums.RenderState;
@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 public class PagePdfMergeToPdfSupplier implements Supplier<WkhtmlRenderResultVO> {
 
     @Getter
-    protected PlaywrightRenderProperties playwrightRenderProperties;
+    protected RenderOptions renderOptions;
     @Getter
     protected WkhtmlRenderBO renderBO;
     @Getter
@@ -34,12 +34,12 @@ public class PagePdfMergeToPdfSupplier implements Supplier<WkhtmlRenderResultVO>
     @Getter
     protected BiFunction<PDFMergerUtility, List<PageRenderBO>, WkhtmlRenderResultVO> biFunction;
 
-    public PagePdfMergeToPdfSupplier(PlaywrightRenderProperties playwrightRenderProperties,
+    public PagePdfMergeToPdfSupplier(RenderOptions renderOptions,
                                      WkhtmlRenderBO renderBO,
                                      List<PageRenderBO> pdfs,
                                      List<PageScreenshotChecker> pageScreenshotCheckers,
                                      BiFunction<PDFMergerUtility, List<PageRenderBO>, WkhtmlRenderResultVO> biFunction) {
-        this.playwrightRenderProperties = playwrightRenderProperties;
+        this.renderOptions = renderOptions;
         this.renderBO = renderBO;
         this.pdfs = pdfs;
         this.pageScreenshotCheckers = pageScreenshotCheckers;

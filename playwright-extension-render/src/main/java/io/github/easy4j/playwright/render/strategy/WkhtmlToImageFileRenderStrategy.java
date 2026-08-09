@@ -14,7 +14,6 @@ import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
-import org.springframework.util.CollectionUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -82,7 +81,7 @@ public class WkhtmlToImageFileRenderStrategy extends WkhtmlToImageBufferRenderSt
                 try{
                     log.debug("Compressing screenshot file : {}", screenshot.getPath());
                     File sourceFile = new File(screenshot.getPath());
-                    File outFile = new File(playwrightRenderProperties.getTmpDir(), screenshot.getName());
+                    File outFile = new File(renderOptions.getTmpDir(), screenshot.getName());
                     Thumbnails.of(sourceFile)
                             .allowOverwrite(true)
                             .scale(1f)
@@ -102,7 +101,7 @@ public class WkhtmlToImageFileRenderStrategy extends WkhtmlToImageBufferRenderSt
 
     @Override
     public WkhtmlRenderResultVO doPacking(WkhtmlRenderBO renderBO, List<PageRenderBO> screenshots) throws IOException {
-        if (CollectionUtils.isEmpty(screenshots)) {
+        if ((screenshots == null || screenshots.isEmpty())) {
             return new WkhtmlRenderResultVO()
                     .setRenderState(RenderState.FAIL)
                     .setRenderFailedReason("截图全部失败，参数可能异常，请重试！")
@@ -134,7 +133,7 @@ public class WkhtmlToImageFileRenderStrategy extends WkhtmlToImageBufferRenderSt
                     .setFileBuffer(screenshot.getBuffer())
                     .setFileSize(screenshot.getFileSize()));
         }
-        return CompletableFuture.supplyAsync(new PageScreenshotMergeToZipFileSupplier(playwrightRenderProperties, renderBO, screenshots), dtpToImageZipExecutor);
+        return CompletableFuture.supplyAsync(new PageScreenshotMergeToZipFileSupplier(renderOptions, renderBO, screenshots), dtpToImageZipExecutor);
     }
 
     /**
@@ -154,7 +153,7 @@ public class WkhtmlToImageFileRenderStrategy extends WkhtmlToImageBufferRenderSt
                     .setFileBuffer(screenshot.getBuffer())
                     .setFileSize(screenshot.getFileSize()));
         }
-        return CompletableFuture.supplyAsync(new PageScreenshotPackToZipFileSupplier(playwrightRenderProperties, renderBO, screenshots), dtpToImageZipExecutor);
+        return CompletableFuture.supplyAsync(new PageScreenshotPackToZipFileSupplier(renderOptions, renderBO, screenshots), dtpToImageZipExecutor);
     }
 
 }

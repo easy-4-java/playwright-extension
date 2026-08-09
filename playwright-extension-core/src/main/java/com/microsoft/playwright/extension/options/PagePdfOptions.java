@@ -1,11 +1,11 @@
-package com.microsoft.playwright.spring.boot.options;
+package com.microsoft.playwright.extension.options;
 
 
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.Margin;
 import lombok.Data;
-import org.springframework.boot.context.properties.PropertyMapper;
-import com.microsoft.playwright.spring.boot.properties.PropertyMapperCompat;
+
+
 
 import java.nio.file.Path;
 
@@ -84,7 +84,7 @@ public class PagePdfOptions {
     public String width;
 
     public Page.PdfOptions toOptions(){
-        PropertyMapper map = PropertyMapperCompat.alwaysApplyingWhenNonNull();
+        OptionMapper map = OptionMapper.get().alwaysApplyingWhenNonNull();
         Page.PdfOptions options = new Page.PdfOptions();
         map.from(this.getDisplayHeaderFooter()).to(options::setDisplayHeaderFooter);
         map.from(this.getFooterTemplate()).whenHasText().to(options::setFooterTemplate);

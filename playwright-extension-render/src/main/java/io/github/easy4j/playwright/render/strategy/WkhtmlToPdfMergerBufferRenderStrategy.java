@@ -7,7 +7,6 @@ import io.github.easy4j.playwright.render.enums.RenderType;
 import io.github.easy4j.playwright.render.exception.TaskRuntimeException;
 import io.github.easy4j.playwright.render.vo.WkhtmlRenderResultVO;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.CollectionUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -50,7 +49,7 @@ public class WkhtmlToPdfMergerBufferRenderStrategy extends AbstractPlaywrightRen
 
     @Override
     protected WkhtmlRenderResultVO doPacking(WkhtmlRenderBO renderBO, List<PageRenderBO> pdfs) {
-        if (CollectionUtils.isEmpty(pdfs)) {
+        if ((pdfs == null || pdfs.isEmpty())) {
             return new WkhtmlRenderResultVO()
                     .setRenderState(RenderState.FAIL)
                     .setRenderFailedReason("PDF保存全部失败，参数可能异常，请重试！")

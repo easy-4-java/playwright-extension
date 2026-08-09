@@ -48,7 +48,7 @@ public class WkhtmlToPdfMergerFileRenderStrategy extends WkhtmlToPdfMergerBuffer
             String pdfFileName = "document_" + renderBO.getTaskId() + ".pdf";
             try {
                 // 设置合并生成pdf文件名称
-                String pdfFilePath = playwrightRenderProperties.getTmpDir() + File.separator + pdfFileName;
+                String pdfFilePath = renderOptions.getTmpDir() + File.separator + pdfFileName;
                 mergePdf.setDestinationFileName(pdfFilePath);
                 // 使用主内存进行PDF合并处理
                 //mergePdf.mergeDocuments(MemoryUsageSetting.setupMainMemoryOnly());
