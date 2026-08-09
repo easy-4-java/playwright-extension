@@ -4,9 +4,8 @@ import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.options.Cookie;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.CollectionUtils;
 
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -18,7 +17,7 @@ public class BrowserUtil {
         if (Objects.isNull(request)) {
             return;
         }
-        jakarta.servlet.http.Cookie[] requestCookies = request.getCookies();
+        javax.servlet.http.Cookie[] requestCookies = request.getCookies();
         if(Objects.isNull(browserContext) || ArrayUtils.isEmpty(requestCookies)){
             return;
         }
@@ -33,7 +32,7 @@ public class BrowserUtil {
                     cookie1.setSecure(cookie.getSecure());
                     return cookie1;
                 }).collect(Collectors.toList());
-        if (CollectionUtils.isEmpty(cookies)){
+        if ((cookies == null || cookies.isEmpty())){
             return;
         }
         browserContext.addCookies(cookies);

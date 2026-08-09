@@ -12,7 +12,7 @@
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
 
@@ -47,31 +47,31 @@
     </distributionManagement>
 
     <properties>
-        <maven-central-publishing-plugin.version>0.11.0</maven-central-publishing-plugin.version>
-        <maven-javadoc-plugin.version>3.11.2</maven-javadoc-plugin.version>
-        <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
-        <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
-        <revision>2.0.x.20260630-SNAPSHOT</revision>
-        <java.version>17</java.version>
-        <maven.compiler.release>${java.version}</maven.compiler.release>
+        <revision>1.0.x.20260630-SNAPSHOT</revision>
+        <java.version>1.8</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <!-- 3rd party dependency versions -->
-        <playwright.version>1.48.0</playwright.version>
+
+        <caffeine.version>2.9.3</caffeine.version>
+        <checker-qual.version>3.42.0</checker-qual.version>
+        <pdfbox.version>3.0.3</pdfbox.version>
+        <playwright.version>1.46.0</playwright.version>
         <commons-pool2.version>2.13.0</commons-pool2.version>
         <commons-io.version>2.20.0</commons-io.version>
-        <spring-framework.version>6.2.16</spring-framework.version>
-        <transmittable-thread-local.version>2.14.5</transmittable-thread-local.version>
-
-        <!-- Build tooling -->
+        <spring-framework.version>5.3.39</spring-framework.version>
+        <transmittable-thread-local.version>2.14.3</transmittable-thread-local.version>
+        <thumbnailator.version>0.4.20</thumbnailator.version>
         <slf4j.version>2.0.18</slf4j.version>
         <lombok.version>1.18.46</lombok.version>
-        <junit-jupiter.version>6.0.1</junit-jupiter.version>
-        <mockito.version>5.11.0</mockito.version>
+        <junit-jupiter.version>5.10.2</junit-jupiter.version>
+        <mockito.version>4.11.0</mockito.version>
         <assertj.version>3.27.7</assertj.version>
+
+        <!-- Build tooling -->
         <maven.version>3.0</maven.version>
         <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
         <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
@@ -80,10 +80,19 @@
         <maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
         <maven-install-plugin.version>3.1.4</maven-install-plugin.version>
         <maven-jacoco-plugin.version>0.8.15</maven-jacoco-plugin.version>
+        <maven-central-publishing-plugin.version>0.11.0</maven-central-publishing-plugin.version>
+        <maven-javadoc-plugin.version>3.11.2</maven-javadoc-plugin.version>
+        <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
+        <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.apache.pdfbox</groupId>
+                <artifactId>pdfbox</artifactId>
+                <version>${pdfbox.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.microsoft.playwright</groupId>
                 <artifactId>playwright</artifactId>
@@ -108,6 +117,23 @@
                 <groupId>com.alibaba</groupId>
                 <artifactId>transmittable-thread-local</artifactId>
                 <version>${transmittable-thread-local.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>net.coobird</groupId>
+                <artifactId>thumbnailator</artifactId>
+                <version>${thumbnailator.version}</version>
+            </dependency>
+            <!-- Optional: only required at runtime by the background-similarity checker -->
+            <dependency>
+                <groupId>com.github.ben-manes.caffeine</groupId>
+                <artifactId>caffeine</artifactId>
+                <version>${caffeine.version}</version>
+            </dependency>
+            <!-- checker-qual is a transitive of caffeine; declaring optional avoids forcing the user -->
+            <dependency>
+                <groupId>org.checkerframework</groupId>
+                <artifactId>checker-qual</artifactId>
+                <version>${checker-qual.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.projectlombok</groupId>
@@ -138,12 +164,6 @@
                 <groupId>org.assertj</groupId>
                 <artifactId>assertj-core</artifactId>
                 <version>${assertj.version}</version>
-            </dependency>
-            <!-- Internal module: spring module depends on core -->
-            <dependency>
-                <groupId>io.github.easy4j</groupId>
-                <artifactId>playwright-extension-core</artifactId>
-                <version>${revision}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

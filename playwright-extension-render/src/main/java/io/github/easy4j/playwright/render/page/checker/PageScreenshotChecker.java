@@ -3,7 +3,7 @@ package io.github.easy4j.playwright.render.page.checker;
 import io.github.easy4j.playwright.render.bo.PageRenderBO;
 import io.github.easy4j.playwright.render.bo.WkhtmlRenderBO;
 import io.github.easy4j.playwright.render.enums.PDPageSize;
-import org.springframework.core.Ordered;
+import io.github.easy4j.playwright.render.strategy.Ordered;
 
 import java.awt.image.BufferedImage;
 

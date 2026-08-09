@@ -20,7 +20,7 @@
              users can opt-in to Redis / Sequence / hitool features. -->
         <pdfbox.version>3.0.3</pdfbox.version>
         <thumbnailator.version>0.4.20</thumbnailator.version>
-        <caffeine.version>3.1.8</caffeine.version>
+        <caffeine.version>2.9.3</caffeine.version>
         <commons-collections4.version>4.4</commons-collections4.version>
         <commons-exec.version>1.4.0</commons-exec.version>
         <commons-lang3.version>3.17.0</commons-lang3.version>
@@ -120,54 +120,18 @@
             <version>${hutool.version}</version>
         </dependency>
 
-        <!-- Jakarta annotations (@Resource) -->
-        <dependency>
-            <groupId>jakarta.annotation</groupId>
-            <artifactId>jakarta.annotation-api</artifactId>
-            <version>${jakarta-annotation-api.version}</version>
-        </dependency>
+        <!-- Jakarta annotations (@Resource) — removed, render is Spring-free -->
 
         <!-- Servlet API (used by BrowserUtil for cookie copying) -->
         <dependency>
-            <groupId>jakarta.servlet</groupId>
-            <artifactId>jakarta.servlet-api</artifactId>
-            <version>6.0.0</version>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>4.0.1</version>
             <optional>true</optional>
         </dependency>
 
-        <!-- Spring Boot autoconfigure (PlaywrightRenderProperties / PlaywrightRenderConfiguration) -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot</artifactId>
-            <version>3.2.12</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-autoconfigure</artifactId>
-            <version>3.2.12</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
-            <version>6.1.13</version>
-        </dependency>
-
-        <!-- Original private dependencies replaced by in-module shims:
-             - hitool ByteUnitFormat / StringUtils / DateFormats  → inline + Spring's StringUtils
-             - io.ddd4j.boot.core.sequence.Sequence                → shim interface in render module
-             - RedisOperationTemplate / RedisKey                   → shim interface in render module
-             The Spring Boot starter provides concrete implementations. -->
-
-        <!-- Lombok -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
+        <!-- Spring dependencies removed: render module is Spring-free.
+             PlaywrightProperties / PlaywrightRenderConfiguration live in spring module. -->
 
         <!-- Test -->
         <dependency>
@@ -193,6 +157,33 @@
                         <goals>
                             <goal>jar-no-fork</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Enforcer: ban Spring dependencies in render module -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>ban-spring-dependencies</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <bannedDependencies>
+                                    <searchTransitive>true</searchTransitive>
+                                    <excludes>
+                                        <exclude>org.springframework:*</exclude>
+                                        <exclude>org.springframework.*:*</exclude>
+                                        <exclude>org.springframework.boot:*</exclude>
+                                    </excludes>
+                                    <message>playwright-extension-render must remain independent from Spring. Spring integration lives in playwright-extension-spring.</message>
+                                </bannedDependencies>
+                            </rules>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

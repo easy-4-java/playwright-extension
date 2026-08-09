@@ -1,6 +1,6 @@
 package io.github.easy4j.playwright.render.page.supplier;
 
-import io.github.easy4j.playwright.render.PlaywrightRenderProperties;
+import io.github.easy4j.playwright.render.strategy.RenderOptions;
 import io.github.easy4j.playwright.render.bo.PageRenderBO;
 import io.github.easy4j.playwright.render.bo.WkhtmlRenderBO;
 import io.github.easy4j.playwright.render.enums.RenderState;
@@ -23,16 +23,16 @@ import java.util.zip.ZipOutputStream;
 public class PageScreenshotMergeToZipFileSupplier implements Supplier<WkhtmlRenderResultVO> {
 
     @Getter
-    protected PlaywrightRenderProperties playwrightRenderProperties;
+    protected RenderOptions renderOptions;
     @Getter
     protected WkhtmlRenderBO renderBO;
     @Getter
     protected List<PageRenderBO> screenshots;
 
-    public PageScreenshotMergeToZipFileSupplier(PlaywrightRenderProperties playwrightRenderProperties,
+    public PageScreenshotMergeToZipFileSupplier(RenderOptions renderOptions,
                                                 WkhtmlRenderBO renderBO,
                                                 List<PageRenderBO> screenshots) {
-        this.playwrightRenderProperties = playwrightRenderProperties;
+        this.renderOptions = renderOptions;
         this.renderBO = renderBO;
         this.screenshots = screenshots;
     }
@@ -41,7 +41,7 @@ public class PageScreenshotMergeToZipFileSupplier implements Supplier<WkhtmlRend
     public WkhtmlRenderResultVO get() {
         String zipFileName = renderBO.getTaskId() + ".zip";
         log.debug("Merging screenshots to ZIP: {}", zipFileName);
-        File zipFile = new File(playwrightRenderProperties.getTmpDir(), zipFileName);
+        File zipFile = new File(renderOptions.getTmpDir(), zipFileName);
         try ( ZipOutputStream zipOutputStream = new ZipOutputStream(Files.newOutputStream(zipFile.toPath()))){
             // 将所有截图写入ZIP文件
             screenshots.sort(Comparator.comparingInt(PageRenderBO::getIndex));

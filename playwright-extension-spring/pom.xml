@@ -13,19 +13,63 @@
 
     <artifactId>playwright-extension-spring</artifactId>
     <name>${project.groupId}:${project.artifactId}</name>
-    <description>Spring Framework integration for playwright-extension (lightweight, not Spring Boot)</description>
+    <description>Spring Boot integration for playwright-extension: auto-configuration, properties binding, render wiring</description>
+
+    <properties>
+        <spring-boot.version>2.7.18</spring-boot.version>
+        <spring-framework.version>5.3.39</spring-framework.version>
+    </properties>
 
     <dependencies>
-        <!-- core: pool, options, hooks, utils -->
+        <!-- Internal modules -->
         <dependency>
             <groupId>io.github.easy4j</groupId>
             <artifactId>playwright-extension-core</artifactId>
             <version>${revision}</version>
         </dependency>
-        <!-- Spring Framework: utilities only; full Spring Boot integration lives in playwright-spring-boot-starter -->
+        <dependency>
+            <groupId>io.github.easy4j</groupId>
+            <artifactId>playwright-extension-image</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.easy4j</groupId>
+            <artifactId>playwright-extension-pdf</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.easy4j</groupId>
+            <artifactId>playwright-extension-task</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.github.easy4j</groupId>
+            <artifactId>playwright-extension-render</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <!-- Spring Boot -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+            <version>${spring-boot.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+            <version>${spring-boot.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
+            <version>${spring-framework.version}</version>
+        </dependency>
+
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Test dependencies -->
