@@ -15,23 +15,15 @@
     <name>${project.groupId}:${project.artifactId}</name>
     <description>PDF utilities for playwright-extension: metadata, hyperlinks, remote PDF loading (zero Spring dependency)</description>
 
-    <properties>
-        <pdfbox.version>3.0.3</pdfbox.version>
-        <commons-io.version>2.20.0</commons-io.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
-            <version>${pdfbox.version}</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>${commons-io.version}</version>
         </dependency>
-
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>

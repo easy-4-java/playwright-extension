@@ -16,6 +16,8 @@
 package io.github.easy4j.playwright.task.retry;
 
 import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
 
 import java.time.Duration;
 
@@ -40,6 +42,7 @@ public class DefaultRetryPolicy implements RetryPolicy {
     @Builder.Default
     private final Duration retryInterval = Duration.ofSeconds(3);
 
+    @Getter
     @Builder.Default
     private final double loadFactor = DEFAULT_LOAD_FACTOR;
 
@@ -63,10 +66,6 @@ public class DefaultRetryPolicy implements RetryPolicy {
     @Override
     public Duration retryInterval() {
         return retryInterval;
-    }
-
-    public double getLoadFactor() {
-        return loadFactor;
     }
 
     @Override

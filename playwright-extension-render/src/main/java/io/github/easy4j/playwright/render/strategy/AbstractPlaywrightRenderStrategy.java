@@ -3,6 +3,7 @@ package io.github.easy4j.playwright.render.strategy;
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.net.url.UrlBuilder;
 import cn.hutool.core.net.url.UrlQuery;
+import cn.hutool.core.util.IdUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.google.common.collect.Lists;
@@ -11,7 +12,6 @@ import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.Media;
 import com.microsoft.playwright.spring.boot.PlaywrightProperties;
 import com.microsoft.playwright.extension.pool.BrowserContextPool;
-import io.ddd4j.boot.core.sequence.Sequence;
 import io.github.easy4j.playwright.render.PlaywrightRenderProperties;
 import io.github.easy4j.playwright.render.bo.PageRenderBO;
 import io.github.easy4j.playwright.render.bo.WkhtmlRenderBO;
@@ -80,8 +80,6 @@ public abstract class AbstractPlaywrightRenderStrategy<B extends WkhtmlRenderBO>
     protected static final DateTimeFormatter FILE_NAME_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_PATTERN);
     protected static final DateTimeFormatter DIRECTORY_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
 
-    @Resource
-    protected Sequence sequence;
     @Autowired
     protected PlaywrightProperties playwrightProperties;
     @Autowired
@@ -119,7 +117,7 @@ public abstract class AbstractPlaywrightRenderStrategy<B extends WkhtmlRenderBO>
     @Override
     public WkhtmlRenderResultVO render(B renderBO) throws Exception {
         log.info("=================Playwright 渲染 HTML:开始=================");
-        String taskId = StringUtils.isNotBlank(renderBO.getTaskId()) ? renderBO.getTaskId() :  String.valueOf(getSequence().nextId());
+        String taskId = StringUtils.isNotBlank(renderBO.getTaskId()) ? renderBO.getTaskId() : IdUtil.getSnowflakeNextIdStr();
         renderBO.setTaskId(taskId);
         StopWatch stopWatch = new StopWatch(taskId);
         WkhtmlRenderResultVO resultBO = null;

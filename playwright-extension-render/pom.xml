@@ -151,24 +151,6 @@
             <artifactId>spring-core</artifactId>
             <version>6.1.13</version>
         </dependency>
-
-        <!-- Original private dependencies replaced by in-module shims:
-             - hitool ByteUnitFormat / StringUtils / DateFormats  → inline + Spring's StringUtils
-             - io.ddd4j.boot.core.sequence.Sequence                → shim interface in render module
-             - RedisOperationTemplate / RedisKey                   → shim interface in render module
-             The Spring Boot starter provides concrete implementations. -->
-
-        <!-- Lombok -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-
         <!-- Test -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>

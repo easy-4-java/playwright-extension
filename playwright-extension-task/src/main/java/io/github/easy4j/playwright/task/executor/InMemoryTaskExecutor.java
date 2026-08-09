@@ -50,12 +50,16 @@ public class InMemoryTaskExecutor implements TaskExecutor, AutoCloseable {
     }
 
     public InMemoryTaskExecutor(int corePoolSize, int maxPoolSize, int queueCapacity) {
-        this.pool = new ThreadPoolExecutor(
+        this(new ThreadPoolExecutor(
                 corePoolSize,
                 maxPoolSize,
                 60L, TimeUnit.SECONDS,
-                new LinkedBlockingQueue<Runnable>(queueCapacity),
-                new ThreadPoolExecutor.CallerRunsPolicy());
+                new LinkedBlockingQueue<>(queueCapacity),
+                new ThreadPoolExecutor.CallerRunsPolicy()));
+    }
+
+    public InMemoryTaskExecutor(ThreadPoolExecutor pool) {
+        this.pool = pool;
     }
 
     @Override

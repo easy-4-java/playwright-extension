@@ -15,6 +15,7 @@
  */
 package io.github.easy4j.playwright.pdf.enums;
 
+import lombok.Getter;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 
 /**
@@ -28,6 +29,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
  * @author [@Loong Wan](https://github.com/loong10k)
  * @since 1.0.0
  */
+@Getter
 public enum PdfPageSize {
     A0(PDRectangle.A0),
     A1(PDRectangle.A1),
@@ -43,10 +45,6 @@ public enum PdfPageSize {
 
     PdfPageSize(PDRectangle rectangle) {
         this.rectangle = rectangle;
-    }
-
-    public PDRectangle getRectangle() {
-        return rectangle;
     }
 
     /**

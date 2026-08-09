@@ -15,35 +15,23 @@
     <name>${project.groupId}:${project.artifactId}</name>
     <description>Image utilities for playwright-extension: blank detection, scaling, watermarking, similarity (zero Spring dependency)</description>
 
-    <properties>
-        <!-- Caffeine is needed only by the background-similarity checker (optional) -->
-        <caffeine.version>3.1.8</caffeine.version>
-        <thumbnailator.version>0.4.20</thumbnailator.version>
-        <checker-qual.version>3.42.0</checker-qual.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>net.coobird</groupId>
             <artifactId>thumbnailator</artifactId>
-            <version>${thumbnailator.version}</version>
         </dependency>
-
         <!-- Optional: only required at runtime by the background-similarity checker -->
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
-            <version>${caffeine.version}</version>
             <optional>true</optional>
         </dependency>
         <!-- checker-qual is a transitive of caffeine; declaring optional avoids forcing the user -->
         <dependency>
             <groupId>org.checkerframework</groupId>
             <artifactId>checker-qual</artifactId>
-            <version>${checker-qual.version}</version>
             <optional>true</optional>
         </dependency>
-
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
