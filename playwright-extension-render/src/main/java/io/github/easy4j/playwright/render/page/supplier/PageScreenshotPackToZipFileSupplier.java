@@ -1,6 +1,6 @@
 package io.github.easy4j.playwright.render.page.supplier;
 
-import io.github.easy4j.playwright.render.PlaywrightRenderProperties;
+import io.github.easy4j.playwright.render.strategy.RenderOptions;
 import io.github.easy4j.playwright.render.bo.PageRenderBO;
 import io.github.easy4j.playwright.render.bo.WkhtmlRenderBO;
 import io.github.easy4j.playwright.render.enums.RenderState;
@@ -21,16 +21,16 @@ import java.util.function.Supplier;
 public class PageScreenshotPackToZipFileSupplier implements Supplier<WkhtmlRenderResultVO> {
 
     @Getter
-    protected PlaywrightRenderProperties playwrightRenderProperties;
+    protected RenderOptions renderOptions;
     @Getter
     protected WkhtmlRenderBO renderBO;
     @Getter
     protected List<PageRenderBO> screenshots;
 
-    public PageScreenshotPackToZipFileSupplier(PlaywrightRenderProperties playwrightRenderProperties,
+    public PageScreenshotPackToZipFileSupplier(RenderOptions renderOptions,
                                                WkhtmlRenderBO renderBO,
                                                List<PageRenderBO> screenshots) {
-        this.playwrightRenderProperties = playwrightRenderProperties;
+        this.renderOptions = renderOptions;
         this.renderBO = renderBO;
         this.screenshots = screenshots;
     }
@@ -42,7 +42,7 @@ public class PageScreenshotPackToZipFileSupplier implements Supplier<WkhtmlRende
         try {
             // 创建执行器
             DefaultExecutor executor = DefaultExecutor.builder()
-                    .setWorkingDirectory(new File(playwrightRenderProperties.getTmpDir()))
+                    .setWorkingDirectory(new File(renderOptions.getTmpDir()))
                     .get();
             // 创建监控时间10分钟，超过10分钟则中断执行
             ExecuteWatchdog watchdog = ExecuteWatchdog.builder().setTimeout(Duration.ofMinutes(10)).get();
@@ -70,7 +70,7 @@ public class PageScreenshotPackToZipFileSupplier implements Supplier<WkhtmlRende
             // 执行 zip 命令行
             executor.execute(cmdLine);
             // 返回结果
-            File zipFile = new File(playwrightRenderProperties.getTmpDir(), zipFileName);
+            File zipFile = new File(renderOptions.getTmpDir(), zipFileName);
             return new WkhtmlRenderResultVO()
                     .setRenderState(RenderState.SUCCESS)
                     .setFileName(zipFileName)

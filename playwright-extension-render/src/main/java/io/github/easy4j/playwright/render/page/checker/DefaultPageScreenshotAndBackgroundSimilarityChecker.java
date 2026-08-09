@@ -9,7 +9,6 @@ import io.github.easy4j.playwright.render.enums.RenderState;
 import io.github.easy4j.playwright.render.util.ImageUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.lang.NonNull;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -38,7 +37,7 @@ public class DefaultPageScreenshotAndBackgroundSimilarityChecker implements Page
                 .removalListener(new RemovalListener<String, Optional<BufferedImage>>() {
 
                     @Override
-                    public void onRemoval(String imageUrl,Optional<BufferedImage> value, @NonNull RemovalCause cause) {
+                    public void onRemoval(String imageUrl,Optional<BufferedImage> value, RemovalCause cause) {
                         log.debug("The BufferedImage cache of {} was removed, cause is {}", imageUrl, cause);
                     }
 

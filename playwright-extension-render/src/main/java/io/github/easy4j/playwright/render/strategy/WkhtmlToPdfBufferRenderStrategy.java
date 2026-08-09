@@ -7,7 +7,6 @@ import io.github.easy4j.playwright.render.enums.RenderType;
 import io.github.easy4j.playwright.render.exception.TaskRuntimeException;
 import io.github.easy4j.playwright.render.vo.WkhtmlRenderResultVO;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.CollectionUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -33,7 +32,7 @@ public class WkhtmlToPdfBufferRenderStrategy extends WkhtmlToImageBufferRenderSt
      */
     @Override
     public WkhtmlRenderResultVO doPacking(WkhtmlRenderBO renderBO, List<PageRenderBO> screenshots) throws IOException {
-        if (CollectionUtils.isEmpty(screenshots)) {
+        if ((screenshots == null || screenshots.isEmpty())) {
             return new WkhtmlRenderResultVO()
                     .setRenderState(RenderState.FAIL)
                     .setRenderFailedReason("PDF保存全部失败，参数可能异常，请重试！")

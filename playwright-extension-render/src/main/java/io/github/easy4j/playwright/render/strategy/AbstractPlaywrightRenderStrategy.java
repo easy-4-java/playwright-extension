@@ -10,9 +10,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.Media;
-import com.microsoft.playwright.spring.boot.PlaywrightProperties;
+import io.github.easy4j.playwright.render.strategy.PageOptionsProvider;
 import com.microsoft.playwright.extension.pool.BrowserContextPool;
-import io.github.easy4j.playwright.render.PlaywrightRenderProperties;
+import io.github.easy4j.playwright.render.strategy.RenderOptions;
 import io.github.easy4j.playwright.render.bo.PageRenderBO;
 import io.github.easy4j.playwright.render.bo.WkhtmlRenderBO;
 import io.github.easy4j.playwright.render.enums.CheckState;
@@ -22,12 +22,12 @@ import io.github.easy4j.playwright.render.page.checker.PageScreenshotChecker;
 import io.github.easy4j.playwright.render.page.supplier.PagePdfMergeToPdfSupplier;
 import io.github.easy4j.playwright.render.page.supplier.PageScreenshotMergeToPdfSupplier;
 import io.github.easy4j.playwright.render.redis.BizRedisKey;
+import io.github.easy4j.playwright.task.store.TaskStateStore;
 import io.github.easy4j.playwright.render.util.ImageUtil;
 import io.github.easy4j.playwright.render.util.TimeUtil;
 import io.github.easy4j.playwright.render.vo.WkhtmlRenderResultVO;
 import org.apache.commons.lang3.StringUtils;
 
-import jakarta.annotation.Resource;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.MapUtils;
@@ -35,13 +35,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.ApplicationEventPublisherAware;
-import org.springframework.data.redis.core.RedisOperationTemplate;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StopWatch;
+
 
 import java.io.File;
 import java.io.IOException;
@@ -63,7 +57,7 @@ import java.util.function.BiFunction;
  * 抽象的 Playwright 处理策略
  */
 @Slf4j
-public abstract class AbstractPlaywrightRenderStrategy<B extends WkhtmlRenderBO> implements PlaywrightRenderStrategy<B>, InitializingBean, ApplicationEventPublisherAware {
+public abstract class AbstractPlaywrightRenderStrategy<B extends WkhtmlRenderBO> implements PlaywrightRenderStrategy<B> {
 
     protected static final int MIN_QUALITY = 0;
     protected static final int MAX_QUALITY = 100;
@@ -80,34 +74,19 @@ public abstract class AbstractPlaywrightRenderStrategy<B extends WkhtmlRenderBO>
     protected static final DateTimeFormatter FILE_NAME_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern(DATE_PATTERN);
     protected static final DateTimeFormatter DIRECTORY_DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
 
-    @Autowired
-    protected PlaywrightProperties playwrightProperties;
-    @Autowired
-    protected PlaywrightRenderProperties playwrightRenderProperties;
-    @Autowired
+    protected PageOptionsProvider pageOptionsProvider;
+    protected RenderOptions renderOptions;
     protected BrowserContextPool browserContextPool;
-    @Resource
     protected ThreadPoolExecutor dtpToImageExecutor;
-    @Resource
     protected ThreadPoolExecutor dtpToImageCompressExecutor;
-    @Resource
     protected ThreadPoolExecutor dtpToImageZipExecutor;
-    @Resource
     protected ThreadPoolExecutor dtpToPdfExecutor;
-    @Resource
     protected ThreadPoolExecutor dtpToPdfMergeExecutor;
     @Getter
-    @Autowired
-    protected RedisOperationTemplate redisOperation;
+    protected TaskStateStore taskStateStore;
     @Getter
     protected List<PageScreenshotChecker> pageScreenshotCheckers;
 
-    protected ApplicationEventPublisher eventPublisher;
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        // TODO Auto-generated method stub
-    }
 
     @Override
     public void setPageScreenshotCheckers(List<PageScreenshotChecker> pageScreenshotCheckers) {
@@ -119,7 +98,7 @@ public abstract class AbstractPlaywrightRenderStrategy<B extends WkhtmlRenderBO>
         log.info("=================Playwright 渲染 HTML:开始=================");
         String taskId = StringUtils.isNotBlank(renderBO.getTaskId()) ? renderBO.getTaskId() : IdUtil.getSnowflakeNextIdStr();
         renderBO.setTaskId(taskId);
-        StopWatch stopWatch = new StopWatch(taskId);
+        
         WkhtmlRenderResultVO resultBO = null;
         try {
             // 1、执行参数校验
@@ -129,7 +108,7 @@ public abstract class AbstractPlaywrightRenderStrategy<B extends WkhtmlRenderBO>
             String param = Base64.decodeStr(renderBO.getParam(), Charset.defaultCharset());
             JSONObject jsonObject = JSON.parseObject(param);
             List<String> urls = jsonObject.getList(REPORT_URLS_PARAM_NAME, String.class);
-            if(CollectionUtils.isEmpty(urls)){
+            if((urls == null || urls.isEmpty())){
                 throw new PlaywrightException("report_urls is empty");
             }
 
@@ -137,8 +116,8 @@ public abstract class AbstractPlaywrightRenderStrategy<B extends WkhtmlRenderBO>
             urls.removeIf(StringUtils::isBlank);
 
             // 报告单渲染状态缓存
-            String rdsKey = BizRedisKey.RENDER_STATE.getKey(taskId);
-            Map<Object, Object> stateMap = redisOperation.hmGet(rdsKey);
+            
+            Map<String, String> stateMap = new java.util.HashMap<>(taskStateStore.getAllStates(taskId));
             // 网页URL数组
             List<PageRenderBO> tempList = Lists.newArrayList();
             for (int i = 0; i < urls.size(); i++) {
@@ -149,9 +128,9 @@ public abstract class AbstractPlaywrightRenderStrategy<B extends WkhtmlRenderBO>
                 // 如果配置了域名前缀，则需要将传递过来的URL进行替换出来
                 if (!StringUtils.isNotBlank(query.get(REPORT_PARAM_PROJECT_ORIGIN_NAME)) && !StringUtils.isNotBlank(query.get(REPORT_PARAM_OUTPAGE_NAME))){
                     // 如果配置了域名前缀，则使用对应的URL前缀
-                    urlPrefix = Objects.toString(playwrightRenderProperties.getUrlPrefix(), StringUtils.EMPTY);
+                    urlPrefix = Objects.toString(renderOptions.getUrlPrefix(), StringUtils.EMPTY);
                 }
-                if(StringUtils.isNotBlank(urlPrefix) && playwrightRenderProperties.isUseUrlPrefix()){
+                if(StringUtils.isNotBlank(urlPrefix) && renderOptions.isUseUrlPrefix()){
                     urlBuilder = UrlBuilder.of(urlPrefix)
                             .setPath(urlBuilder.getPath())
                             .setQuery(urlBuilder.getQuery())
@@ -205,7 +184,7 @@ public abstract class AbstractPlaywrightRenderStrategy<B extends WkhtmlRenderBO>
             renderBO.setUrls(tempList);
             // 有渲染状态缓存时候
             if (MapUtils.isNotEmpty(stateMap)) {
-                redisOperation.hmSet(rdsKey, stateMap, Duration.ofDays(2));
+                taskStateStore.setAllStates(taskId, stateMap, Duration.ofDays(2));
             }
             renderBO.setCompress(Objects.nonNull(renderBO.getCompress()) ? renderBO.getCompress() : Boolean.FALSE);
             renderBO.setToFile(Objects.nonNull(renderBO.getToFile()) ? renderBO.getToFile() : Boolean.FALSE);
@@ -213,29 +192,29 @@ public abstract class AbstractPlaywrightRenderStrategy<B extends WkhtmlRenderBO>
             List<PageRenderBO> pageRenders;
             try {
                 log.info("=================Playwright 渲染 PDF/Image:开始=================");
-                stopWatch.start("Playwright 渲染 PDF/Image");
+                long _phaseStart = System.currentTimeMillis(); // Playwright 渲染 PDF/Image
                 pageRenders = this.doGenerate(renderBO);
             } finally {
-                stopWatch.stop();
+                
                 log.info("=================Playwright 渲染 PDF/Image:结束=================");
             }
             // 2、执行打包内容生成逻辑
             try {
                 log.info("=================压缩 Image:开始=================");
-                stopWatch.start("Playwright 渲染 PDF/Image");
+                long _phaseStart = System.currentTimeMillis(); // Playwright 渲染 PDF/Image
                 pageRenders = this.doCompress(renderBO, pageRenders);
             } finally {
-                stopWatch.stop();
+                
                 log.info("=================Playwright 渲染 PDF/Image:结束=================");
             }
             // 3、执行打包逻辑
             try {
                 log.info("=================PDF/Image文件zip压缩:开始=================");
-                stopWatch.start("PDF/Image文件zip压缩");
+                long _phaseStart = System.currentTimeMillis(); // PDF/Image文件zip压缩
                 resultBO = this.doPacking(renderBO, pageRenders);
                 resultBO.setPages(pageRenders);
             } finally {
-                stopWatch.stop();
+                
                 log.info("=================PDF/Image文件zip压缩:结束=================");
             }
             return resultBO;
@@ -243,10 +222,6 @@ public abstract class AbstractPlaywrightRenderStrategy<B extends WkhtmlRenderBO>
             this.afterException(renderBO, resultBO);
             throw e;
         } finally {
-            if(stopWatch.isRunning()){
-                stopWatch.stop();
-            }
-            log.info(stopWatch.prettyPrint());
             log.info("=================Playwright 渲染 HTML:结束=================");
         }
     }
@@ -267,7 +242,7 @@ public abstract class AbstractPlaywrightRenderStrategy<B extends WkhtmlRenderBO>
      * @return 截图结果
      */
     protected List<PageRenderBO> captureScreenshotAsync(B renderBO){
-        if (CollectionUtils.isEmpty(renderBO.getUrls())) {
+        if ((renderBO.getUrls() == null || renderBO.getUrls().isEmpty())) {
             return Lists.newArrayList();
         }
         try {
@@ -297,7 +272,7 @@ public abstract class AbstractPlaywrightRenderStrategy<B extends WkhtmlRenderBO>
                 });
                 futureList.add(completableFuture);
             }
-            if (CollectionUtils.isEmpty(futureList)) {
+            if ((futureList == null || futureList.isEmpty())) {
                 return Lists.newArrayList();
             }
             // 2、使用CompletableFuture.allOf()方法，等待所有异步线程执行完毕
@@ -434,7 +409,7 @@ public abstract class AbstractPlaywrightRenderStrategy<B extends WkhtmlRenderBO>
             return false;
         }
         // 如果自定义判断方法，则执行自定义判断方法
-        if(playwrightRenderProperties.isUseCustomCheck() && !CollectionUtils.isEmpty(pageScreenshotCheckers)){
+        if(renderOptions.isUseCustomCheck() && !(pageScreenshotCheckers == null || pageScreenshotCheckers.isEmpty())){
             return pageScreenshotCheckers.stream().filter(Objects::nonNull)
                     .allMatch(checker -> checker.afterPageScreenShot(pageRenderBO));
         }
@@ -460,7 +435,7 @@ public abstract class AbstractPlaywrightRenderStrategy<B extends WkhtmlRenderBO>
         // 默认设置不需要重新加载
         pageRenderBO.setReload(false);
         // 默认设置加载超时时间为页面导航超时时间
-        pageRenderBO.setReloadTimeout(playwrightProperties.getPageNavigateOptions().getTimeout());
+        pageRenderBO.setReloadTimeout(pageOptionsProvider.getPageNavigateOptions().getTimeout());
         // 监听页面加载完成事件
         page.onLoad(page1 -> {
             if(pageRenderBO.isReload()){
@@ -522,16 +497,16 @@ public abstract class AbstractPlaywrightRenderStrategy<B extends WkhtmlRenderBO>
             log.debug("page crash and need reload for url : {}", page1.url());
         });
         // 设置页面加载参数, 并跳转到url
-        Page.NavigateOptions navigateOptions = playwrightProperties.getPageNavigateOptions().toOptions();
+        Page.NavigateOptions navigateOptions = pageOptionsProvider.getPageNavigateOptions().toOptions();
         page.navigate(pageRenderBO.getUrl(), navigateOptions);
         // 设置了元素等待选择器，则等待元素加载完成
-        String waitForSelector = playwrightRenderProperties.getWaitForSelector();
+        String waitForSelector = renderOptions.getWaitForSelector();
         if (StringUtils.isNotBlank(waitForSelector)) {
             log.debug("The page waitForSelector for : {}", waitForSelector);
             ElementHandle elementHandle = null;
             try {
                 // 等待元素加载完成
-                elementHandle = page.waitForSelector(waitForSelector, playwrightProperties.getPageWaitForSelectorOptions().toOptions());
+                elementHandle = page.waitForSelector(waitForSelector, pageOptionsProvider.getPageWaitForSelectorOptions().toOptions());
                 if(Objects.isNull(elementHandle)){
                     pageRenderBO.setRenderState(RenderState.FAIL);
                     pageRenderBO.setRenderFailedReason(String.format("页面截图失败，前端就绪状态检测元素（%s）未找到", waitForSelector));
@@ -560,10 +535,10 @@ public abstract class AbstractPlaywrightRenderStrategy<B extends WkhtmlRenderBO>
             }
         }
         // 如果设置了加载等待时间，则等待一段时间
-        if(playwrightRenderProperties.isLoadWait() && Objects.nonNull(playwrightRenderProperties.getLoadWaitDuration()) && playwrightRenderProperties.getLoadWaitDuration().toMillis() > 0){
+        if(renderOptions.isLoadWait() && Objects.nonNull(renderOptions.getLoadWaitDuration()) && renderOptions.getLoadWaitDuration().toMillis() > 0){
             try {
-                log.debug("The page load wait {} milliseconds for : {}", playwrightRenderProperties.getLoadWaitDuration().toMillis(), page.url());
-                TimeUnit.MILLISECONDS.sleep(playwrightRenderProperties.getLoadWaitDuration().toMillis());
+                log.debug("The page load wait {} milliseconds for : {}", renderOptions.getLoadWaitDuration().toMillis(), page.url());
+                TimeUnit.MILLISECONDS.sleep(renderOptions.getLoadWaitDuration().toMillis());
             } catch (InterruptedException e) {
                 // ignore
                 log.error("Thread was interrupted", e);
@@ -611,7 +586,7 @@ public abstract class AbstractPlaywrightRenderStrategy<B extends WkhtmlRenderBO>
         }
         // 结果不符合要求，补充重试机制，多次打开页面
         AtomicInteger loadRetry = new AtomicInteger(0);
-        while ( playwrightRenderProperties.isReloadAble() && pageRenderBO.isNeedReload() && loadRetry.incrementAndGet() < playwrightRenderProperties.getReloadLimit()) {
+        while ( renderOptions.isReloadAble() && pageRenderBO.isNeedReload() && loadRetry.incrementAndGet() < renderOptions.getReloadLimit()) {
             try {
                 // 动态调整超时时间
                 if(Objects.nonNull(pageRenderBO.getReloadTimeout())){
@@ -622,7 +597,7 @@ public abstract class AbstractPlaywrightRenderStrategy<B extends WkhtmlRenderBO>
                 log.debug("The page reloading for : {} , reloadTimes: {}, reloadTimeout: {}", page.url(), loadRetry.get(), pageRenderBO.getReloadTimeout());
                 Page.ReloadOptions reloadOptions = new Page.ReloadOptions()
                         .setTimeout(pageRenderBO.getReloadTimeout())
-                        .setWaitUntil(playwrightProperties.getPageNavigateOptions().getWaitUntil());
+                        .setWaitUntil(pageOptionsProvider.getPageNavigateOptions().getWaitUntil());
                 page.reload(reloadOptions);
                 // 设置重新加载状态为false
                 pageRenderBO.setReload(false);
@@ -631,7 +606,7 @@ public abstract class AbstractPlaywrightRenderStrategy<B extends WkhtmlRenderBO>
                     log.debug("The page waitForSelector for : {}", waitForSelector);
                     ElementHandle elementHandle = null;
                     try {
-                        elementHandle = page.waitForSelector(waitForSelector, playwrightProperties.getPageWaitForSelectorOptions().toOptions());
+                        elementHandle = page.waitForSelector(waitForSelector, pageOptionsProvider.getPageWaitForSelectorOptions().toOptions());
                         // 如果元素加载完成，则获取元素的 data-render-result 属性
                         if(DATA_RENDER_ERROR.equalsIgnoreCase(elementHandle.getAttribute(DATA_RENDER_ATTR))){
                             pageRenderBO.setCheckState(CheckState.WEB_CHECK_FAIL);
@@ -654,10 +629,10 @@ public abstract class AbstractPlaywrightRenderStrategy<B extends WkhtmlRenderBO>
                     }
                 }
                 // 如果是重试，则等待一段时间
-                if(playwrightRenderProperties.isReloadWait() && Objects.nonNull(playwrightRenderProperties.getReloadWaitDuration()) && playwrightRenderProperties.getReloadWaitDuration().toMillis() > 0){
+                if(renderOptions.isReloadWait() && Objects.nonNull(renderOptions.getReloadWaitDuration()) && renderOptions.getReloadWaitDuration().toMillis() > 0){
                     try {
-                        log.debug("The page reload wait {} milliseconds for : {}", playwrightRenderProperties.getReloadWaitDuration().toMillis(), page.url());
-                        TimeUnit.MILLISECONDS.sleep(playwrightRenderProperties.getReloadWaitDuration().toMillis());
+                        log.debug("The page reload wait {} milliseconds for : {}", renderOptions.getReloadWaitDuration().toMillis(), page.url());
+                        TimeUnit.MILLISECONDS.sleep(renderOptions.getReloadWaitDuration().toMillis());
                     } catch (InterruptedException e) {
                         log.error("Thread was interrupted", e);
                     }
@@ -698,9 +673,9 @@ public abstract class AbstractPlaywrightRenderStrategy<B extends WkhtmlRenderBO>
             try {
                 // 截图
                 if(StringUtils.isEmpty(selector)){
-                    Page.ScreenshotOptions screenshotOptions = playwrightProperties.getPageScreenshotOptions().toOptions();
-                    if(playwrightRenderProperties.isWriteToFile()){
-                        File screenshotFile = new File(playwrightRenderProperties.getTmpDir(), rendeId + File.separator + fileName);
+                    Page.ScreenshotOptions screenshotOptions = pageOptionsProvider.getPageScreenshotOptions().toOptions();
+                    if(renderOptions.isWriteToFile()){
+                        File screenshotFile = new File(renderOptions.getTmpDir(), rendeId + File.separator + fileName);
                         log.info("准备第{}页截图，renderId:{}, renderType : {}, to path: {}", pageRenderBO.getIndex(), rendeId, getRenderType(), screenshotFile.getAbsolutePath());
                         screenshotOptions.setPath(screenshotFile.toPath());
                         page.screenshot(screenshotOptions);
@@ -726,9 +701,9 @@ public abstract class AbstractPlaywrightRenderStrategy<B extends WkhtmlRenderBO>
                                 // 滚动到元素位置
                                 elementHandle.scrollIntoViewIfNeeded();
                             }*/
-                            ElementHandle.ScreenshotOptions screenshotOptions = playwrightProperties.getElementScreenshotOptions().toOptions();
-                            if (playwrightRenderProperties.isWriteToFile()) {
-                                File screenshotFile = new File(playwrightRenderProperties.getTmpDir(), rendeId + File.separator + fileName);
+                            ElementHandle.ScreenshotOptions screenshotOptions = pageOptionsProvider.getElementScreenshotOptions().toOptions();
+                            if (renderOptions.isWriteToFile()) {
+                                File screenshotFile = new File(renderOptions.getTmpDir(), rendeId + File.separator + fileName);
                                 log.debug("准备第{}页截图，rendeId : {}, renderType : {}, with selector : {}, to path: {}", pageRenderBO.getIndex(), rendeId, getRenderType(), selector, screenshotFile.getAbsolutePath());
                                 screenshotOptions.setPath(screenshotFile.toPath());
                                 elementHandle.screenshot(screenshotOptions);
@@ -780,7 +755,7 @@ public abstract class AbstractPlaywrightRenderStrategy<B extends WkhtmlRenderBO>
      * @return PDF
      */
     protected List<PageRenderBO> pageToPdfFutureAsync(B renderBO){
-        if (CollectionUtils.isEmpty(renderBO.getUrls())) {
+        if ((renderBO.getUrls() == null || renderBO.getUrls().isEmpty())) {
             return Lists.newArrayList();
         }
         BrowserContext browserContext = null;
@@ -811,7 +786,7 @@ public abstract class AbstractPlaywrightRenderStrategy<B extends WkhtmlRenderBO>
                 });
                 futureList.add(completableFuture);
             }
-            if (CollectionUtils.isEmpty(futureList)) {
+            if ((futureList == null || futureList.isEmpty())) {
                 return Lists.newArrayList();
             }
             // 2、使用CompletableFuture.allOf()方法，等待所有异步线程执行完毕
@@ -913,10 +888,10 @@ public abstract class AbstractPlaywrightRenderStrategy<B extends WkhtmlRenderBO>
                 String fileName = String.format("%s.pdf", pageRenderBO.getIndex());
                 pageRenderBO.setName(fileName);
                 page.emulateMedia(new Page.EmulateMediaOptions().setMedia(Media.SCREEN));
-                if(playwrightRenderProperties.isWriteToFile()){
-                    File pdfFile = new File(playwrightRenderProperties.getTmpDir(), rendeId + File.separator + fileName);
+                if(renderOptions.isWriteToFile()){
+                    File pdfFile = new File(renderOptions.getTmpDir(), rendeId + File.separator + fileName);
                     log.debug("Generate pdf file start for rendeId : {}, renderType : {}, to path: {}", rendeId, getRenderType(), pdfFile.getAbsolutePath());
-                    Page.PdfOptions pdfOptions = playwrightProperties.getPagePdfOptions().toOptions();
+                    Page.PdfOptions pdfOptions = pageOptionsProvider.getPagePdfOptions().toOptions();
                     pdfOptions.setPath(pdfFile.toPath());
                     page.pdf(pdfOptions);
                     pageRenderBO.setPath(pdfFile.getAbsolutePath());
@@ -926,7 +901,7 @@ public abstract class AbstractPlaywrightRenderStrategy<B extends WkhtmlRenderBO>
                 } else {
                     log.debug("Generate pdf buffer start for rendeId : {}, renderType : {}", rendeId, getRenderType());
                     // 生成PDF
-                    Page.PdfOptions pdfOptions = playwrightProperties.getPagePdfOptions().toOptions();
+                    Page.PdfOptions pdfOptions = pageOptionsProvider.getPagePdfOptions().toOptions();
                     byte[] pdfBuffer = page.pdf(pdfOptions);
                     pageRenderBO.setBuffer(pdfBuffer);
                     pageRenderBO.setFileSize(((long)(pdfBuffer.length / 1024L)));
@@ -953,7 +928,7 @@ public abstract class AbstractPlaywrightRenderStrategy<B extends WkhtmlRenderBO>
     protected CompletableFuture<WkhtmlRenderResultVO> mergeScreenshotsToPDF(WkhtmlRenderBO renderBO,
                                                                     List<PageRenderBO> screenshots,
                                                                     BiFunction<PDDocument, List<PageRenderBO>, WkhtmlRenderResultVO> biFunction) {
-        return CompletableFuture.supplyAsync(new PageScreenshotMergeToPdfSupplier(playwrightRenderProperties, renderBO, screenshots, pageScreenshotCheckers, biFunction, redisOperation), dtpToPdfMergeExecutor);
+        return CompletableFuture.supplyAsync(new PageScreenshotMergeToPdfSupplier(renderOptions, renderBO, screenshots, pageScreenshotCheckers, biFunction, taskStateStore), dtpToPdfMergeExecutor);
     }
 
 
@@ -966,7 +941,7 @@ public abstract class AbstractPlaywrightRenderStrategy<B extends WkhtmlRenderBO>
     protected CompletableFuture<WkhtmlRenderResultVO> mergePdfsToPDF(WkhtmlRenderBO renderBO,
                                                              List<PageRenderBO> pdfs,
                                                              BiFunction<PDFMergerUtility, List<PageRenderBO>, WkhtmlRenderResultVO> biFunction) {
-        return CompletableFuture.supplyAsync(new PagePdfMergeToPdfSupplier(playwrightRenderProperties, renderBO, pdfs, pageScreenshotCheckers, biFunction), dtpToPdfMergeExecutor);
+        return CompletableFuture.supplyAsync(new PagePdfMergeToPdfSupplier(renderOptions, renderBO, pdfs, pageScreenshotCheckers, biFunction), dtpToPdfMergeExecutor);
     }
 
     @Override
@@ -974,7 +949,7 @@ public abstract class AbstractPlaywrightRenderStrategy<B extends WkhtmlRenderBO>
         log.debug("clean Temporary");
         try {
             if(StringUtils.isNotBlank(renderBO.getTaskId())){
-                File fileDirectory = new File(playwrightRenderProperties.getTmpDir(), renderBO.getTaskId());
+                File fileDirectory = new File(renderOptions.getTmpDir(), renderBO.getTaskId());
                 if(fileDirectory.exists()){
                     log.debug("delete Temporary Directory  : {}" , fileDirectory.getAbsolutePath());
                     FileUtils.deleteDirectory(fileDirectory);
@@ -991,19 +966,5 @@ public abstract class AbstractPlaywrightRenderStrategy<B extends WkhtmlRenderBO>
             log.error("Failed to delete file", e);
         }
     }
-
-    protected ApplicationEventPublisher getEventPublisher() {
-        return eventPublisher;
-    }
-
-    @Override
-    public void setApplicationEventPublisher(ApplicationEventPublisher eventPublisher) {
-        this.eventPublisher = eventPublisher;
-    }
-
-    protected Sequence getSequence() {
-        return sequence;
-    }
-
 
 }

@@ -1,6 +1,6 @@
 package io.github.easy4j.playwright.render.page.supplier;
 
-import io.github.easy4j.playwright.render.PlaywrightRenderProperties;
+import io.github.easy4j.playwright.render.strategy.RenderOptions;
 import io.github.easy4j.playwright.render.bo.PageRenderBO;
 import io.github.easy4j.playwright.render.bo.WkhtmlRenderBO;
 import io.github.easy4j.playwright.render.enums.CheckState;
@@ -14,7 +14,6 @@ import io.github.easy4j.playwright.render.util.PdfUtil;
 import io.github.easy4j.playwright.render.vo.WkhtmlRenderResultVO;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.pdfbox.io.IOUtils;
@@ -23,8 +22,7 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
-import org.springframework.data.redis.core.RedisOperationTemplate;
-import org.springframework.util.CollectionUtils;
+import io.github.easy4j.playwright.task.store.TaskStateStore;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -44,7 +42,7 @@ import java.util.function.Supplier;
 public class PageScreenshotMergeToPdfSupplier implements Supplier<WkhtmlRenderResultVO> {
 
     @Getter
-    protected PlaywrightRenderProperties playwrightRenderProperties;
+    protected RenderOptions renderOptions;
     @Getter
     protected WkhtmlRenderBO renderBO;
     @Getter
@@ -54,20 +52,20 @@ public class PageScreenshotMergeToPdfSupplier implements Supplier<WkhtmlRenderRe
     @Getter
     protected BiFunction<PDDocument, List<PageRenderBO>, WkhtmlRenderResultVO> biFunction;
     @Getter
-    protected RedisOperationTemplate redisOperation;
+    protected TaskStateStore taskStateStore;
 
-    public PageScreenshotMergeToPdfSupplier(PlaywrightRenderProperties playwrightRenderProperties,
+    public PageScreenshotMergeToPdfSupplier(RenderOptions renderOptions,
                                             WkhtmlRenderBO renderBO,
                                             List<PageRenderBO> screenshots,
                                             List<PageScreenshotChecker> pageScreenshotCheckers,
                                             BiFunction<PDDocument, List<PageRenderBO>, WkhtmlRenderResultVO> biFunction,
-                                            RedisOperationTemplate redisOperation) {
-        this.playwrightRenderProperties = playwrightRenderProperties;
+                                            TaskStateStore taskStateStore) {
+        this.renderOptions = renderOptions;
         this.renderBO = renderBO;
         this.screenshots = screenshots;
         this.pageScreenshotCheckers = pageScreenshotCheckers;
         this.biFunction = biFunction;
-        this.redisOperation = redisOperation;
+        this.taskStateStore = taskStateStore;
     }
 
     @Override
@@ -101,7 +99,7 @@ public class PageScreenshotMergeToPdfSupplier implements Supplier<WkhtmlRenderRe
 
     protected void doCustomCheck(PageRenderBO pageRenderBO, BufferedImage pdfImage, PDPageSize pdPageSize) {
         // 如果图片不为空，且存在检查器，则进行图片添加到PDF对象前的检查
-        if(playwrightRenderProperties.isUseCustomCheck() && !CollectionUtils.isEmpty(pageScreenshotCheckers)){
+        if(renderOptions.isUseCustomCheck() && !(pageScreenshotCheckers == null || pageScreenshotCheckers.isEmpty())){
             for(PageScreenshotChecker checker : pageScreenshotCheckers){
                 if(Objects.nonNull(checker) && !checker.beforePdfPageAdd(renderBO, pageRenderBO, pdfImage, pdPageSize)){
                     if(Objects.isNull(pageRenderBO.getRenderState())){
@@ -120,7 +118,7 @@ public class PageScreenshotMergeToPdfSupplier implements Supplier<WkhtmlRenderRe
      */
     protected PDDocument addPages(PDDocument pdDocument, List<PageRenderBO> screenshots) {
         // 检查截图列表是否为空
-        if (CollectionUtils.isEmpty(screenshots)) {
+        if ((screenshots == null || screenshots.isEmpty())) {
             log.warn("No screenshots provided, skipping PDF page addition.");
             return pdDocument;
         }
@@ -134,8 +132,8 @@ public class PageScreenshotMergeToPdfSupplier implements Supplier<WkhtmlRenderRe
 
         try {
             // 报告单渲染状态缓存
-            String rdsKey = BizRedisKey.RENDER_STATE.getKey(renderBO.getTaskId());
-            Map<Object, Object> stateMap = redisOperation.hmGet(rdsKey);
+            String rdsKey = BizRedisKey.renderStateKey(renderBO.getTaskId());
+            Map<String, String> stateMap = new java.util.HashMap<>(taskStateStore.getAllStates(renderBO.getTaskId()));
 
             screenshots.sort(Comparator.comparingInt(PageRenderBO::getIndex));
             for (PageRenderBO pageRenderBO : screenshots) {
@@ -203,8 +201,8 @@ public class PageScreenshotMergeToPdfSupplier implements Supplier<WkhtmlRenderRe
             }
 
             // 有渲染状态缓存时候
-            if (MapUtils.isNotEmpty(stateMap)) {
-                redisOperation.hmSet(rdsKey, stateMap, Duration.ofDays(2));
+            if (!stateMap.isEmpty()) {
+                taskStateStore.setAllStates(renderBO.getTaskId(), stateMap, Duration.ofDays(2));
             }
         } finally {
             // 释放所有资源

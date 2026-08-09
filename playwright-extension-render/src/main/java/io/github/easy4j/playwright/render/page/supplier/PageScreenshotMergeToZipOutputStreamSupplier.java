@@ -1,6 +1,6 @@
 package io.github.easy4j.playwright.render.page.supplier;
 
-import io.github.easy4j.playwright.render.PlaywrightRenderProperties;
+import io.github.easy4j.playwright.render.strategy.RenderOptions;
 import io.github.easy4j.playwright.render.bo.PageRenderBO;
 import io.github.easy4j.playwright.render.bo.WkhtmlRenderBO;
 import io.github.easy4j.playwright.render.enums.RenderState;
@@ -29,16 +29,16 @@ public class PageScreenshotMergeToZipOutputStreamSupplier implements Supplier<Wk
     private static final Charset DEFAULT_CHARSET = Charset.defaultCharset();
 
     @Getter
-    protected PlaywrightRenderProperties playwrightRenderProperties;
+    protected RenderOptions renderOptions;
     @Getter
     protected WkhtmlRenderBO renderBO;
     @Getter
     protected List<PageRenderBO> screenshots;
 
-    public PageScreenshotMergeToZipOutputStreamSupplier(PlaywrightRenderProperties playwrightRenderProperties,
+    public PageScreenshotMergeToZipOutputStreamSupplier(RenderOptions renderOptions,
                                                         WkhtmlRenderBO renderBO,
                                                         List<PageRenderBO> screenshots) {
-        this.playwrightRenderProperties = playwrightRenderProperties;
+        this.renderOptions = renderOptions;
         this.renderBO = renderBO;
         this.screenshots = screenshots;
     }

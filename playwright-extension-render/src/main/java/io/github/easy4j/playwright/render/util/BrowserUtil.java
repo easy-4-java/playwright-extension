@@ -4,7 +4,6 @@ import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.options.Cookie;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.CollectionUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
@@ -33,7 +32,7 @@ public class BrowserUtil {
                     cookie1.setSecure(cookie.getSecure());
                     return cookie1;
                 }).collect(Collectors.toList());
-        if (CollectionUtils.isEmpty(cookies)){
+        if ((cookies == null || cookies.isEmpty())){
             return;
         }
         browserContext.addCookies(cookies);
