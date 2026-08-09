@@ -144,7 +144,7 @@ class BrowserContextPooledObjectFactoryTest {
     @Test
     void shouldPassivateObjectWithPages() throws Exception {
         when(page.isClosed()).thenReturn(false);
-        when(browserContext.pages()).thenReturn(List.of(page));
+        when(browserContext.pages()).thenReturn(java.util.Collections.singletonList(page));
         BrowserType.LaunchOptions launchOptions = new BrowserType.LaunchOptions().setHeadless(true);
         BrowserContextPooledObjectFactory factory = new BrowserContextPooledObjectFactory(
                 PlaywrightBrowserType.chromium, launchOptions, new Browser.NewContextOptions());
@@ -202,7 +202,7 @@ class BrowserContextPooledObjectFactoryTest {
     @Test
     void shouldCleanupBrowserContextWithPages() {
         when(page.isClosed()).thenReturn(true);
-        when(browserContext.pages()).thenReturn(List.of(page));
+        when(browserContext.pages()).thenReturn(java.util.Collections.singletonList(page));
         BrowserType.LaunchOptions launchOptions = new BrowserType.LaunchOptions().setHeadless(true);
         BrowserContextPooledObjectFactory factory = new BrowserContextPooledObjectFactory(
                 PlaywrightBrowserType.chromium, launchOptions, new Browser.NewContextOptions());

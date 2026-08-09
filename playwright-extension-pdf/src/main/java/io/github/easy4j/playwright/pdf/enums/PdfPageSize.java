@@ -30,6 +30,9 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
  * @since 1.0.0
  */
 @Getter
+/**
+ * Enumeration of standard PDF page sizes (A4, Letter, etc.).
+ */
 public enum PdfPageSize {
     A0(PDRectangle.A0),
     A1(PDRectangle.A1),

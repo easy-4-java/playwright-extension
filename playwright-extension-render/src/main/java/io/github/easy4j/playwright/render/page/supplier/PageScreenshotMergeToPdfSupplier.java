@@ -39,6 +39,9 @@ import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
 @Slf4j
+/**
+ * Supplier that merges multiple page screenshots into a single PDF document.
+ */
 public class PageScreenshotMergeToPdfSupplier implements Supplier<WkhtmlRenderResultVO> {
 
     @Getter

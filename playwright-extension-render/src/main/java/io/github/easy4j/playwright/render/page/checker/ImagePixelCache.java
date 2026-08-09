@@ -7,6 +7,9 @@ import java.awt.image.BufferedImage;
 /**
  */
 @Data
+/**
+ * Cache for storing image pixel data to avoid repeated decoding.
+ */
 public class ImagePixelCache {
 
     private final int width;

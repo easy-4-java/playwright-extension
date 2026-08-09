@@ -1,5 +1,8 @@
 package io.github.easy4j.playwright.render.util;
 
+/**
+ * Utility class for time measurement and formatting operations.
+ */
 public class TimeUtil {
 
     /**

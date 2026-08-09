@@ -11,6 +11,9 @@ import java.awt.image.BufferedImage;
 import java.util.Objects;
 
 @Slf4j
+/**
+ * Default implementation of page screenshot comparison using pixel-level analysis.
+ */
 public class DefaultPageScreenshotChecker implements PageScreenshotChecker {
 
     @Override

@@ -53,6 +53,9 @@ import java.io.IOException;
  * @since 1.0.0
  */
 @Slf4j
+/**
+ * Utility class for image manipulation including resizing and format conversion.
+ */
 public final class ImageUtil {
 
     public static final String IMAGE_TYPE = "png";

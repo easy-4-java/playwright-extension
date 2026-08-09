@@ -71,7 +71,7 @@ class BrowserNewContextOptionsTest {
                 .setBypassCSP(false)
                 .setColorScheme(ColorScheme.DARK)
                 .setDeviceScaleFactor(2.0)
-                .setExtraHttpHeaders(Map.of("X-Custom", "val"))
+                .setExtraHttpHeaders(java.util.Collections.singletonMap("X-Custom", "val"))
                 .setForcedColors(ForcedColors.NONE)
                 .setHasTouch(true)
                 .setHttpCredentials(new HttpCredentials("user", "pass"))
@@ -80,19 +80,19 @@ class BrowserNewContextOptionsTest {
                 .setJavaScriptEnabled(true)
                 .setLocale("de-DE")
                 .setOffline(false)
-                .setPermissions(List.of("geolocation"))
+                .setPermissions(java.util.Collections.singletonList("geolocation"))
                 .setProxy(new Proxy("http://proxy:8080"))
                 .setRecordHarContent(HarContentPolicy.ATTACH)
                 .setRecordHarMode(HarMode.FULL)
                 .setRecordHarOmitContent(false)
-                .setRecordHarPath(Path.of("/tmp/har"))
+                .setRecordHarPath(java.nio.file.Paths.get("/tmp/har"))
                 .setRecordHarUrlFilter("**/*")
-                .setRecordVideoDir(Path.of("/tmp/video"))
+                .setRecordVideoDir(java.nio.file.Paths.get("/tmp/video"))
                 .setReducedMotion(ReducedMotion.REDUCE)
                 .setScreenSize(new ScreenSize(1920, 1080))
                 .setServiceWorkers(ServiceWorkerPolicy.ALLOW)
                 .setStorageState("{\"cookies\":[]}")
-                .setStorageStatePath(Path.of("/tmp/state.json"))
+                .setStorageStatePath(java.nio.file.Paths.get("/tmp/state.json"))
                 .setStrictSelectors(true)
                 .setTimezoneId("Asia/Shanghai")
                 .setUserAgent("CustomAgent/1.0")
@@ -111,8 +111,8 @@ class BrowserNewContextOptionsTest {
     @Test
     void shouldSkipEmptyCollections() {
         BrowserNewContextOptions opts = new BrowserNewContextOptions()
-                .setPermissions(List.of())
-                .setExtraHttpHeaders(Map.of());
+                .setPermissions(java.util.Collections.emptyList())
+                .setExtraHttpHeaders(java.util.Collections.emptyMap());
         Browser.NewContextOptions result = opts.toOptions();
         assertNotNull(result);
     }

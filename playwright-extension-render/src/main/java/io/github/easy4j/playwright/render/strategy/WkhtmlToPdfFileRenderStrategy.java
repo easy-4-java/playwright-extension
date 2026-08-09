@@ -19,6 +19,9 @@ import java.util.concurrent.CompletableFuture;
  * Playwright 渲染引擎将 HTML 渲染为 PDF 和各种图像格式
  */
 @Slf4j
+/**
+ * Strategy for rendering web pages to PDF files using wkhtmltopdf.
+ */
 public class WkhtmlToPdfFileRenderStrategy extends WkhtmlToImageFileRenderStrategy {
 
     @Override

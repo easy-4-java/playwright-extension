@@ -16,6 +16,9 @@ import java.util.Map;
  * @author [@Loong Wan](https://github.com/loong10k)
  */
 @Data
+/**
+ * Spring Boot configuration options for persistent browser context launching.
+ */
 public class BrowserLaunchPersistentContextOptions {
 
     public static final long DEFAULT_DIR_USAGE_TIMEOUT = 30 * 60 * 1000; // 30分钟

@@ -27,6 +27,9 @@ import java.awt.image.BufferedImage;
  * @since 1.0.0
  */
 @Slf4j
+/**
+ * Interface for comparing individual pixels between images.
+ */
 public final class PixelComparator {
 
     private PixelComparator() {

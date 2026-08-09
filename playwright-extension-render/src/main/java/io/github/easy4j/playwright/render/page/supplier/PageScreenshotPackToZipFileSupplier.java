@@ -18,6 +18,9 @@ import java.util.List;
 import java.util.function.Supplier;
 
 @Slf4j
+/**
+ * Supplier that packs page screenshots into a ZIP file with compression.
+ */
 public class PageScreenshotPackToZipFileSupplier implements Supplier<WkhtmlRenderResultVO> {
 
     @Getter

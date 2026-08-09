@@ -25,6 +25,9 @@ import java.util.stream.Collectors;
  * 使用 Playwright 渲染引擎将 HTML 渲染为各种图像格式
  */
 @Slf4j
+/**
+ * Strategy for rendering web pages to image files using wkhtmltoimage.
+ */
 public class WkhtmlToImageFileRenderStrategy extends WkhtmlToImageBufferRenderStrategy {
 
     @Override

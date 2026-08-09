@@ -32,6 +32,9 @@ import java.util.function.Function;
  */
 @ConfigurationProperties(PlaywrightProperties.PREFIX)
 @Data
+/**
+ * Spring Boot configuration properties for Playwright browser settings.
+ */
 public class PlaywrightProperties {
 
 	// 85% 内存使用率阈值

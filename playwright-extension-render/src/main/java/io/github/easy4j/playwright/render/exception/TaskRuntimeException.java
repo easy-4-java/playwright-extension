@@ -2,6 +2,9 @@ package io.github.easy4j.playwright.render.exception;
 
 
 
+/**
+ * Exception thrown when a rendering task fails during execution.
+ */
 public class TaskRuntimeException extends RuntimeException {
 
     private static final long serialVersionUID = -7545341502620139031L;

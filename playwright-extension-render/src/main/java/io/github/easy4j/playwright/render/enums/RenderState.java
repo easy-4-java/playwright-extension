@@ -6,6 +6,9 @@ import lombok.Getter;
  * 渲染状态
  */
 @Getter
+/**
+ * Enumeration of rendering states (pending, in-progress, completed, failed).
+ */
 public enum RenderState {
 
     /**

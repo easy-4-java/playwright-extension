@@ -6,6 +6,9 @@ import lombok.Getter;
  * 检查状态
  */
 @Getter
+/**
+ * Enumeration of element check states for form interactions.
+ */
 public enum CheckState {
 
     /**

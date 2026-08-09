@@ -57,6 +57,9 @@ import java.util.function.BiFunction;
  * 抽象的 Playwright 处理策略
  */
 @Slf4j
+/**
+ * Abstract base class for Playwright rendering strategies with common lifecycle methods.
+ */
 public abstract class AbstractPlaywrightRenderStrategy<B extends WkhtmlRenderBO> implements PlaywrightRenderStrategy<B> {
 
     protected static final int MIN_QUALITY = 0;

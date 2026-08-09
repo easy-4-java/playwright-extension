@@ -13,6 +13,9 @@ import java.util.Map;
  */
 @Accessors(chain = true)
 @Data
+/**
+ * Business object for page rendering requests including URL and options.
+ */
 public class PageRenderBO {
 
     /**

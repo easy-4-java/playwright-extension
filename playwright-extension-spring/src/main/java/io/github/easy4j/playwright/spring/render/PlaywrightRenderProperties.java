@@ -8,6 +8,9 @@ import java.time.Duration;
 
 @ConfigurationProperties(PlaywrightRenderProperties.PREFIX)
 @Data
+/**
+ * Spring Boot configuration properties for Playwright rendering behavior.
+ */
 public class PlaywrightRenderProperties {
 
 	public static final String PREFIX = "playwright.page-render-options";
