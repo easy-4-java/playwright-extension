@@ -56,7 +56,7 @@ class PageScreenshotOptionsTest {
                 .setFullPage(true)
                 .setMaskColor("#FF0000")
                 .setOmitBackground(true)
-                .setPath(Path.of("/tmp/page-screenshot.png"))
+                .setPath(java.nio.file.Paths.get("/tmp/page-screenshot.png"))
                 .setScale(ScreenshotScale.DEVICE)
                 .setTimeout(20000.0)
                 .setType(ScreenshotType.PNG);

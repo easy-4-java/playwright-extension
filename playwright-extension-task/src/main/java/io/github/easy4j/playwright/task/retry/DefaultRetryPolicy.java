@@ -30,6 +30,9 @@ import java.time.Duration;
  * @since 1.0.0
  */
 @Builder
+/**
+ * Default retry policy with exponential backoff for failed rendering tasks.
+ */
 public class DefaultRetryPolicy implements RetryPolicy {
 
     public static final double DEFAULT_LOAD_FACTOR = 0.75;

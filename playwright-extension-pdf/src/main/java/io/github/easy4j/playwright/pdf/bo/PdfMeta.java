@@ -30,6 +30,9 @@ import lombok.Data;
  */
 @Data
 @Builder
+/**
+ * Data class holding PDF metadata including title, author, and creation date.
+ */
 public class PdfMeta {
 
     private String author;

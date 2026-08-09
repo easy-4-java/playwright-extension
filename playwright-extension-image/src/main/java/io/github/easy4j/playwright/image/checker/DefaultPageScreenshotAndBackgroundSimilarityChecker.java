@@ -54,6 +54,9 @@ import java.util.Optional;
  * @since 1.0.0
  */
 @Slf4j
+/**
+ * Checker that compares page screenshots by pixel similarity including background analysis.
+ */
 public class DefaultPageScreenshotAndBackgroundSimilarityChecker implements PageScreenshotChecker {
 
     /** Threshold above which a page is considered "too similar to the background". */

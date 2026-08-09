@@ -51,6 +51,9 @@ import java.util.Calendar;
  * @since 1.0.0
  */
 @Slf4j
+/**
+ * Utility class for PDF operations including merging and page manipulation.
+ */
 public final class PdfUtil {
 
     private PdfUtil() {

@@ -13,6 +13,9 @@ import java.util.List;
  */
 @Data
 @Accessors(chain = true)
+/**
+ * Value object holding the result of a wkhtml rendering operation.
+ */
 public class WkhtmlRenderResultVO implements Serializable {
 
     /**

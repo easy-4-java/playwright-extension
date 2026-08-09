@@ -75,7 +75,7 @@ class PlaywrightUtilTest {
     @Test
     void shouldConvertSingleCookieToString() {
         Cookie cookie = new Cookie("session", "abc123");
-        String result = PlaywrightUtil.cookieToString(List.of(cookie));
+        String result = PlaywrightUtil.cookieToString(java.util.Collections.singletonList(cookie));
         assertEquals("session=abc123", result);
     }
 
@@ -83,7 +83,7 @@ class PlaywrightUtilTest {
     void shouldGetCookiesFromPage() {
         Cookie cookie = new Cookie("token", "xyz");
         when(page.context()).thenReturn(browserContext);
-        when(browserContext.cookies()).thenReturn(List.of(cookie));
+        when(browserContext.cookies()).thenReturn(java.util.Collections.singletonList(cookie));
         String result = PlaywrightUtil.getCookies(page);
         assertEquals("token=xyz", result);
     }

@@ -82,7 +82,7 @@ class BrowserLaunchPersistentOptionsTest {
     void shouldMapAllFieldsToLaunchPersistentContextOptions() {
         BrowserLaunchPersistentOptions opts = new BrowserLaunchPersistentOptions()
                 .setAcceptDownloads(true)
-                .setArgs(List.of("--no-sandbox"))
+                .setArgs(java.util.Collections.singletonList("--no-sandbox"))
                 .setBaseURL("http://localhost:3000")
                 .setBypassCSP(false)
                 .setChannel("chrome")
@@ -90,10 +90,10 @@ class BrowserLaunchPersistentOptionsTest {
                 .setColorScheme(ColorScheme.LIGHT)
                 .setDeviceScaleFactor(2.0)
                 .setDevtools(false)
-                .setDownloadsPath(Path.of("/tmp/downloads"))
-                .setEnv(Map.of("KEY", "VALUE"))
-                .setExecutablePath(Path.of("/usr/bin/chromium"))
-                .setExtraHttpHeaders(Map.of("X-Custom", "val"))
+                .setDownloadsPath(java.nio.file.Paths.get("/tmp/downloads"))
+                .setEnv(java.util.Collections.singletonMap("KEY", "VALUE"))
+                .setExecutablePath(java.nio.file.Paths.get("/usr/bin/chromium"))
+                .setExtraHttpHeaders(java.util.Collections.singletonMap("X-Custom", "val"))
                 .setForcedColors(ForcedColors.NONE)
                 .setHandleSighup(true)
                 .setHandleSigint(true)
@@ -101,19 +101,19 @@ class BrowserLaunchPersistentOptionsTest {
                 .setHasTouch(false)
                 .setHeadless(true)
                 .setIgnoreAllDefaultArgs(false)
-                .setIgnoreDefaultArgs(List.of("--mute-audio"))
+                .setIgnoreDefaultArgs(java.util.Collections.singletonList("--mute-audio"))
                 .setIgnoreHttpsErrors(false)
                 .setIsMobile(false)
                 .setJavaScriptEnabled(true)
                 .setLocale("en-US")
                 .setOffline(false)
-                .setPermissions(List.of("geolocation"))
+                .setPermissions(java.util.Collections.singletonList("geolocation"))
                 .setRecordHarContent(HarContentPolicy.ATTACH)
                 .setRecordHarMode(HarMode.MINIMAL)
                 .setRecordHarOmitContent(false)
-                .setRecordHarPath(Path.of("/tmp/har"))
+                .setRecordHarPath(java.nio.file.Paths.get("/tmp/har"))
                 .setRecordHarUrlFilter("**/*")
-                .setRecordVideoDir(Path.of("/tmp/video"))
+                .setRecordVideoDir(java.nio.file.Paths.get("/tmp/video"))
                 .setReducedMotion(ReducedMotion.NO_PREFERENCE)
                 .setScreenSize(new ScreenSize(1920, 1080))
                 .setServiceWorkers(ServiceWorkerPolicy.ALLOW)
@@ -121,7 +121,7 @@ class BrowserLaunchPersistentOptionsTest {
                 .setStrictSelectors(false)
                 .setTimeout(30000.0)
                 .setTimezoneId("UTC")
-                .setTracesDir(Path.of("/tmp/traces"))
+                .setTracesDir(java.nio.file.Paths.get("/tmp/traces"))
                 .setUserAgent("CustomAgent/1.0")
                 .setViewportSize(new ViewportSize(1280, 720));
         BrowserType.LaunchPersistentContextOptions result = opts.toOptions();
@@ -138,10 +138,10 @@ class BrowserLaunchPersistentOptionsTest {
     @Test
     void shouldSkipEmptyCollections() {
         BrowserLaunchPersistentOptions opts = new BrowserLaunchPersistentOptions()
-                .setArgs(List.of())
-                .setEnv(Map.of())
-                .setIgnoreDefaultArgs(List.of())
-                .setPermissions(List.of());
+                .setArgs(java.util.Collections.emptyList())
+                .setEnv(java.util.Collections.emptyMap())
+                .setIgnoreDefaultArgs(java.util.Collections.emptyList())
+                .setPermissions(java.util.Collections.emptyList());
         BrowserType.LaunchPersistentContextOptions result = opts.toOptions();
         assertNotNull(result);
     }

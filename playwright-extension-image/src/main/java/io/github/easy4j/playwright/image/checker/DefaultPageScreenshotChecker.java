@@ -32,6 +32,9 @@ import java.util.Objects;
  * @since 1.0.0
  */
 @Slf4j
+/**
+ * Default implementation of page screenshot comparison using pixel-level analysis.
+ */
 public class DefaultPageScreenshotChecker implements PageScreenshotChecker {
 
     /** Error payload used when the image is null. */

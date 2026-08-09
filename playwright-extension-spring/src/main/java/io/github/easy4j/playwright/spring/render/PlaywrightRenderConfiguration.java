@@ -17,6 +17,9 @@ import java.util.stream.Collectors;
  */
 @Configuration
 @EnableConfigurationProperties(PlaywrightRenderProperties.class)
+/**
+ * Spring Boot auto-configuration for Playwright rendering services.
+ */
 public class PlaywrightRenderConfiguration {
 
     @Bean

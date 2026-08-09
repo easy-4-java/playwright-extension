@@ -41,6 +41,9 @@ import java.util.concurrent.TimeUnit;
  * @since 1.0.0
  */
 @Slf4j
+/**
+ * In-memory implementation of task executor for local task processing.
+ */
 public class InMemoryTaskExecutor implements TaskExecutor, AutoCloseable {
 
     private final ThreadPoolExecutor pool;

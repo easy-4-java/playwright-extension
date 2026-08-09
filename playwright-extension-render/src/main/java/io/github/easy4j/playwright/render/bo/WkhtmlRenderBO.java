@@ -9,6 +9,9 @@ import java.util.List;
  * 使用 Playwright 渲染引擎将 HTML 渲染为 PDF 和各种图像格式的参数
  */
 @Data
+/**
+ * Business object for wkhtmltopdf/wkhtmltoimage rendering requests.
+ */
 public class WkhtmlRenderBO implements Serializable {
 
     /**

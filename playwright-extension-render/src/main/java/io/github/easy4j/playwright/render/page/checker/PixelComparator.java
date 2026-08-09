@@ -4,6 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import java.awt.image.BufferedImage;
 
 @Slf4j
+/**
+ * Interface for comparing individual pixels between images.
+ */
 public class PixelComparator {
 
     public static double compareImages(BufferedImage img1, BufferedImage img2) {

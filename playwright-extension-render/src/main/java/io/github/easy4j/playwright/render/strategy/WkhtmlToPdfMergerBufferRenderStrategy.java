@@ -18,6 +18,9 @@ import java.util.stream.Collectors;
  * Playwright 渲染引擎将 HTML 渲染为 PDF 和各种图像格式
  */
 @Slf4j
+/**
+ * Strategy for merging multiple wkhtmltopdf outputs into a single PDF buffer.
+ */
 public class WkhtmlToPdfMergerBufferRenderStrategy extends AbstractPlaywrightRenderStrategy<WkhtmlRenderBO> {
 
     @Override
