@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * Utility class for browser-related operations and configuration.
+ */
 public class BrowserUtil {
 
     public static void copyCookies(HttpServletRequest request, BrowserContext browserContext) {

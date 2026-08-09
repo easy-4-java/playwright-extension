@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Router that selects the appropriate rendering strategy based on request type.
+ */
 public class PlaywrightRenderStrategyRouter {
 
     private Map<RenderType, PlaywrightRenderStrategy> strategyMap = new HashMap<>();

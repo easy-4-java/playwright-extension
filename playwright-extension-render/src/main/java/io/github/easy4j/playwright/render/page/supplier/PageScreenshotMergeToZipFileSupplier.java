@@ -20,6 +20,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 @Slf4j
+/**
+ * Supplier that merges page screenshots into a ZIP file archive.
+ */
 public class PageScreenshotMergeToZipFileSupplier implements Supplier<WkhtmlRenderResultVO> {
 
     @Getter

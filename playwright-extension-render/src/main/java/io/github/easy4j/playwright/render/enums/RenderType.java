@@ -1,5 +1,8 @@
 package io.github.easy4j.playwright.render.enums;
 
+/**
+ * Enumeration of render output types (PDF, image, HTML).
+ */
 public enum RenderType {
 
     TO_PDF_FILE("PDF输出到文件"),

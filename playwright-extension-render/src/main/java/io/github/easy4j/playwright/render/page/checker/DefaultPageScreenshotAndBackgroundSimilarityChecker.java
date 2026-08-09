@@ -19,6 +19,9 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
+/**
+ * Checker that compares page screenshots by pixel similarity including background analysis.
+ */
 public class DefaultPageScreenshotAndBackgroundSimilarityChecker implements PageScreenshotChecker {
 
     private final LoadingCache<String, Optional<BufferedImage>> IMAGE_CACHES;

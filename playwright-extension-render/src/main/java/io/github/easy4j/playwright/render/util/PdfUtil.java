@@ -28,6 +28,9 @@ import java.util.Calendar;
 import java.util.StringJoiner;
 
 @Slf4j
+/**
+ * Utility class for PDF operations including merging and page manipulation.
+ */
 public class PdfUtil {
 
     public static PDDocumentInformation information(WkhtmlRenderBO renderBO){

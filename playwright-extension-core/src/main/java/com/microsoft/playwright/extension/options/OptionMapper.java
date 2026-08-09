@@ -19,6 +19,9 @@ import java.util.function.Predicate;
  * @author [@Loong Wan](https://github.com/loong10k)
  * @since 3.0.0
  */
+/**
+ * Utility for mapping option objects between different representations.
+ */
 public final class OptionMapper {
 
     private OptionMapper() {

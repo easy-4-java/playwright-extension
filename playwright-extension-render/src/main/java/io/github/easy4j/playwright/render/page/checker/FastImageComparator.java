@@ -2,6 +2,9 @@ package io.github.easy4j.playwright.render.page.checker;
 
 import java.util.stream.IntStream;
 
+/**
+ * Fast image comparator using optimized pixel comparison algorithms.
+ */
 public class FastImageComparator {
 
     // 使用并行流加速处理

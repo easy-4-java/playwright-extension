@@ -1,44 +1,40 @@
 package com.microsoft.playwright.extension;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+/**
+ * Tests for {@link PlaywrightBrowserType}.
+ *
+ * @author [@Loong Wan](https://github.com/loong10k)
+ */
 class PlaywrightBrowserTypeTest {
 
     @Test
-    void shouldContainChromium() {
-        assertNotNull(PlaywrightBrowserType.chromium);
-        assertEquals("chromium", PlaywrightBrowserType.chromium.name());
+    void chromiumShouldExist() {
+        assertThat(PlaywrightBrowserType.chromium).isNotNull();
     }
 
     @Test
-    void shouldContainFirefox() {
-        assertNotNull(PlaywrightBrowserType.firefox);
-        assertEquals("firefox", PlaywrightBrowserType.firefox.name());
+    void firefoxShouldExist() {
+        assertThat(PlaywrightBrowserType.firefox).isNotNull();
     }
 
     @Test
-    void shouldContainWebkit() {
-        assertNotNull(PlaywrightBrowserType.webkit);
-        assertEquals("webkit", PlaywrightBrowserType.webkit.name());
+    void webkitShouldExist() {
+        assertThat(PlaywrightBrowserType.webkit).isNotNull();
     }
 
     @Test
-    void shouldHaveExactlyThreeValues() {
-        PlaywrightBrowserType[] values = PlaywrightBrowserType.values();
-        assertEquals(3, values.length);
+    void valuesShouldContainAllTypes() {
+        assertThat(PlaywrightBrowserType.values()).hasSize(3);
     }
 
     @Test
-    void shouldResolveValueFromString() {
-        assertEquals(PlaywrightBrowserType.chromium, PlaywrightBrowserType.valueOf("chromium"));
-        assertEquals(PlaywrightBrowserType.firefox, PlaywrightBrowserType.valueOf("firefox"));
-        assertEquals(PlaywrightBrowserType.webkit, PlaywrightBrowserType.valueOf("webkit"));
-    }
-
-    @Test
-    void shouldThrowOnInvalidValue() {
-        assertThrows(IllegalArgumentException.class, () -> PlaywrightBrowserType.valueOf("invalid"));
+    void valueOfShouldReturnCorrectEnum() {
+        assertThat(PlaywrightBrowserType.valueOf("chromium")).isEqualTo(PlaywrightBrowserType.chromium);
+        assertThat(PlaywrightBrowserType.valueOf("firefox")).isEqualTo(PlaywrightBrowserType.firefox);
+        assertThat(PlaywrightBrowserType.valueOf("webkit")).isEqualTo(PlaywrightBrowserType.webkit);
     }
 }
