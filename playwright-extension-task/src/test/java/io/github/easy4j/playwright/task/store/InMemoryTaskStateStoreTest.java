@@ -20,7 +20,7 @@ package io.github.easy4j.playwright.task.store;
  * Verifies that the {@link TaskStateStore} interface is implementable with
  * plain JDK concurrency primitives.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 class InMemoryTaskStateStoreTest extends TaskStateStoreContractTest {

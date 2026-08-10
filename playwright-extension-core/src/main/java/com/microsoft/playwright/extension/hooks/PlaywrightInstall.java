@@ -27,7 +27,7 @@ import java.util.Objects;
  * ensure that the required browser binaries are downloaded and available. The download
  * host can be customized via the {@code PLAYWRIGHT_DOWNLOAD_HOST} system property.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  * @see BrowserContextPool
  * @see PlaywrightBrowserType

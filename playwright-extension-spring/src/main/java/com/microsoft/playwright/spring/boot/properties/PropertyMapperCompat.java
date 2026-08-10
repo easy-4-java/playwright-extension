@@ -24,7 +24,7 @@ import org.springframework.boot.context.properties.PropertyMapper;
  * {@code Source.whenNonNull()} exist natively. On Spring Boot 4.x they were
  * removed; this class bridges the gap so the options POJOs compile on both.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public final class PropertyMapperCompat {

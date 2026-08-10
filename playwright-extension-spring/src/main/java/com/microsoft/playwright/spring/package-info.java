@@ -22,7 +22,7 @@
  * {@code @Bean} factories, {@code spring.factories}) lives in the dedicated
  * {@code playwright-spring-boot-starter} project, not here.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  */
 package com.microsoft.playwright.spring;

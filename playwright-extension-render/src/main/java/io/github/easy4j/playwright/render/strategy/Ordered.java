@@ -19,7 +19,7 @@ package io.github.easy4j.playwright.render.strategy;
  * Simple ordering interface, replacing {@code org.springframework.core.Ordered}
  * so the render module has zero Spring dependencies.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public interface Ordered {

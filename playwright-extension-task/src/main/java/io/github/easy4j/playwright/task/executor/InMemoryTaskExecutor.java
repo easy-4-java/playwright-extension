@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
  * <p>Instances are intended to be created once and reused (e.g. one per
  * named pool). Use the {@link #builder()} for ergonomics.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 @Slf4j

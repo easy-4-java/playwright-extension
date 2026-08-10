@@ -28,7 +28,7 @@ import java.util.Objects;
  * <p>Order is {@code -1} so that this checker runs before the (more expensive)
  * background-similarity checker.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 @Slf4j

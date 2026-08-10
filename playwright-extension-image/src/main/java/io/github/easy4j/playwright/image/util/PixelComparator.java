@@ -23,7 +23,7 @@ import java.awt.image.BufferedImage;
  * Sequential pixel-by-pixel comparator. Slower than {@link FastImageComparator}
  * but works directly on {@link BufferedImage} without the cache step.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 @Slf4j

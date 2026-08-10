@@ -19,7 +19,7 @@ import java.util.Map;
  * with a Spring-friendly POJO that supports property binding and fluent chained setters.
  * Persistent context retains cookies, local storage, and other browser state across sessions.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  * @see com.microsoft.playwright.BrowserType.LaunchPersistentContextOptions
  */

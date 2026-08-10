@@ -26,7 +26,7 @@ import java.awt.image.BufferedImage;
  * <p>The cache is immutable after construction: every field is {@code final}
  * via Lombok {@code @Data}.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 @Data

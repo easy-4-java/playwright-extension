@@ -34,7 +34,7 @@ import com.microsoft.playwright.extension.options.PageWaitForSelectorOptions;
  * types), because the render code calls both {@code .toOptions()} (to convert
  * to SDK objects) and individual getters like {@code .getTimeout()}.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public interface PageOptionsProvider {

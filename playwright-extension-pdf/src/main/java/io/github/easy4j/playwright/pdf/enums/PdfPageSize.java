@@ -25,7 +25,7 @@ import org.apache.pdfbox.pdmodel.common.PDRectangle;
  * used by the image module: image module scales images to abstract point
  * dimensions, this enum converts those dimensions into PDFBox page rectangles.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public enum PdfPageSize {

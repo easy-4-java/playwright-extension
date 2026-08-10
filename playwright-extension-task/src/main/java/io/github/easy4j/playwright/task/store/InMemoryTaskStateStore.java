@@ -36,7 +36,7 @@ import java.util.concurrent.ConcurrentMap;
  * {@link #clear(String)} is called or the JVM exits. If you need bounded
  * retention, use the Caffeine- or Redis-backed implementation.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public class InMemoryTaskStateStore implements TaskStateStore {

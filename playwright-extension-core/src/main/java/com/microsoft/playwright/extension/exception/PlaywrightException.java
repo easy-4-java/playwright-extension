@@ -5,7 +5,7 @@ package com.microsoft.playwright.extension.exception;
  * Supports multiple constructor patterns for flexible error reporting with error codes,
  * descriptions, and root causes.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  */
 public class PlaywrightException extends RuntimeException {

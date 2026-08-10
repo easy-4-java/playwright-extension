@@ -23,7 +23,7 @@ package io.github.easy4j.playwright.image.enums;
  * (which must stay zero-dep on third-party PDF libs); the PDF module maps
  * its own page sizes onto this enum via the {@link #fromPoints} adapter.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public enum ImagePageSize {

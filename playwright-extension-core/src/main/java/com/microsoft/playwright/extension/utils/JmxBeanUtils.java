@@ -4,7 +4,7 @@ package com.microsoft.playwright.extension.utils;
  * Utility class for generating JMX ObjectName strings used in MBean registration.
  * Produces names in the format {@code "package.name:type=ClassName"}.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  */
 public class JmxBeanUtils {
