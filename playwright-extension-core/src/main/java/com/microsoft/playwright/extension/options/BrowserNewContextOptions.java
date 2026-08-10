@@ -18,7 +18,7 @@ import java.util.Map;
  * Wraps Playwright's {@link com.microsoft.playwright.Browser.NewContextOptions} with a
  * Spring-friendly POJO that supports property binding and fluent chained setters.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  * @see com.microsoft.playwright.Browser.NewContextOptions
  */

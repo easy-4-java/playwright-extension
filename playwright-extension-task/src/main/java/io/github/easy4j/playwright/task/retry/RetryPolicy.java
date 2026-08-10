@@ -24,7 +24,7 @@ import java.time.Duration;
  * {@code playwrightRenderProperties.reloadLimit / reloadWait} logic in an
  * injectable abstraction, so render code doesn't depend on Spring properties.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public interface RetryPolicy {

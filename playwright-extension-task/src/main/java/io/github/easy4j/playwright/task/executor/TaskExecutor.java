@@ -33,7 +33,7 @@ import java.util.concurrent.CompletableFuture;
  *   <li>Spring Boot starter provides an adapter for dynamic-tp named pools.</li>
  * </ul>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public interface TaskExecutor {

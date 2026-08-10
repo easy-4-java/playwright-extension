@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  * Utility class providing common Playwright operations such as cookie management,
  * localStorage clearing, slider interactions, browser type resolution, and page lifecycle.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  * @see PlaywrightBrowserType
  */

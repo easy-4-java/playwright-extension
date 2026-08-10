@@ -30,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *       {@link BrowserType.LaunchPersistentContextOptions}, retaining cookies and storage.</li>
  * </ul>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  * @see BrowserContextPool
  * @see PlaywrightBrowserType

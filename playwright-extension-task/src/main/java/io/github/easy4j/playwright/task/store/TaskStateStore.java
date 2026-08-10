@@ -41,7 +41,7 @@ import java.util.Map;
  * writes to different keys, and concurrent writes to the same key, must all
  * be safe.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public interface TaskStateStore {

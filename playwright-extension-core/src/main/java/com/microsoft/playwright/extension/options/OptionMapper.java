@@ -16,7 +16,7 @@ import java.util.function.Predicate;
  * map.from(config.getValue()).whenNonNull().to(options::setValue);
  * }</pre>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  */
 public final class OptionMapper {

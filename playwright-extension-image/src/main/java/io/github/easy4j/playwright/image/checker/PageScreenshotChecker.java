@@ -29,7 +29,7 @@ import java.awt.image.BufferedImage;
  * <p>Ordering between multiple checkers is decided externally (by the
  * caller / Spring auto-config) using {@link #getOrder()}.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public interface PageScreenshotChecker extends Comparable<PageScreenshotChecker> {

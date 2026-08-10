@@ -26,7 +26,7 @@ import java.time.Duration;
  * formula in ddd4j-cloud-cmpt-playwright:
  * each retry increases the timeout by {@code loadFactor × attempt}.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 @Builder

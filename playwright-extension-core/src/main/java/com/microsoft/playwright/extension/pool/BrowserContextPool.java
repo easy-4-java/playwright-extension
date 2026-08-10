@@ -12,7 +12,7 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
  * Extends {@link GenericObjectPool} to provide pooled browser context lifecycle management,
  * enabling efficient reuse of browser contexts across concurrent requests.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  * @see GenericObjectPool
  * @see BrowserContextPooledObjectFactory

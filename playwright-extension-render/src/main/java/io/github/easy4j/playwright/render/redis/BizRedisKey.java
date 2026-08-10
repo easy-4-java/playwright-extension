@@ -20,7 +20,7 @@ package io.github.easy4j.playwright.render.redis;
  * on {@code RedisKey.getKeyStr}) to a plain string concatenation, so the render
  * module has zero Spring/Redis dependencies.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public final class BizRedisKey {

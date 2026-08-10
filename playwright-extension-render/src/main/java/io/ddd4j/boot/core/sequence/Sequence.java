@@ -28,7 +28,7 @@ package io.ddd4j.boot.core.sequence;
  * <p>The package name matches the original so existing user beans that
  * implement {@code io.ddd4j.boot.core.sequence.Sequence} keep working.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public interface Sequence {

@@ -50,7 +50,7 @@ import java.util.Optional;
  *
  * <p>Order is {@code 0} so it runs after {@link DefaultPageScreenshotChecker}.</p>
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 @Slf4j

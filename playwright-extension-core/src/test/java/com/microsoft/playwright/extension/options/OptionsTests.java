@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests for option classes in the Playwright extension framework.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 class OptionsTests {
 

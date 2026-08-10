@@ -11,7 +11,7 @@ import java.time.Duration;
  * {@link GenericObjectPoolConfig} settings with a Spring-friendly interface that supports
  * property binding via {@code @ConfigurationProperties}.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  * @see BrowserContextPool
  * @see org.apache.commons.pool2.impl.GenericObjectPoolConfig

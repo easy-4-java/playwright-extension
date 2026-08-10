@@ -26,7 +26,7 @@ import java.util.Objects;
  * named {@code "playwright-shutdown-hook"} to perform graceful cleanup of browser
  * resources during JVM shutdown.
  *
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 3.0.0
  * @see BrowserContextPooledObjectFactory
  */
