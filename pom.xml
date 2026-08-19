@@ -42,7 +42,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <revision>2.0.x.20260630-SNAPSHOT</revision>
-
         <!-- ═══ Dependency versions（自然排序）═══ -->
         <assertj.version>3.27.7</assertj.version>
         <caffeine.version>3.1.8</caffeine.version>
@@ -58,7 +57,6 @@
         <spring-framework.version>6.2.16</spring-framework.version>
         <thumbnailator.version>0.4.20</thumbnailator.version>
         <transmittable-thread-local.version>2.14.5</transmittable-thread-local.version>
-
         <!-- ═══ Maven Plugin versions（自然排序）═══ -->
         <maven-central-publishing-plugin.version>0.11.0</maven-central-publishing-plugin.version>
         <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
@@ -71,7 +69,6 @@
         <maven-javadoc-plugin.version>3.11.2</maven-javadoc-plugin.version>
         <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
         <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
-    
     </properties>
     <dependencyManagement>
         <dependencies>
