@@ -8,14 +8,12 @@
     <version>${revision}</version>
     <packaging>pom</packaging>
     <description>Playwright extension multi-module parent (core + spring)</description>
-
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
             <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
-
     <developers>
         <developer>
             <name>Loong Wan</name>
@@ -27,14 +25,12 @@
             <timezone>+8</timezone>
         </developer>
     </developers>
-
     <scm>
         <connection>scm:git:https://github.com/easy-4-java/${project.artifactId}.git</connection>
         <developerConnection>scm:git:https://github.com/easy-4-java/${project.artifactId}.git</developerConnection>
         <url>https://github.com/easy-4-java/${project.artifactId}</url>
         <tag>${project.artifactId}</tag>
     </scm>
-
     <distributionManagement>
         <repository>
             <id>2624322-release-6F6h6R</id>
@@ -45,7 +41,6 @@
             <url>https://packages.aliyun.com/6927b116e6c3e0425dbdf60d/maven/2624322-snapshot-3eoov3</url>
         </snapshotRepository>
     </distributionManagement>
-
     <properties>
         <!-- ═══ 第一段: 基础属性（自然排序）═══ -->
         <java.version>17</java.version>
@@ -82,7 +77,6 @@
         <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
         <maven-surefire-plugin.version>3.5.2</maven-surefire-plugin.version>
     </properties>
-
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -164,7 +158,6 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -176,7 +169,6 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
     </dependencies>
-
     <modules>
         <module>playwright-extension-core</module>
         <module>playwright-extension-image</module>
@@ -185,7 +177,6 @@
         <module>playwright-extension-render</module>
         <module>playwright-extension-spring</module>
     </modules>
-
     <build>
         <pluginManagement>
             <plugins>
@@ -205,7 +196,6 @@
                         </annotationProcessorPaths>
                     </configuration>
                 </plugin>
-
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
@@ -230,7 +220,6 @@
                         </execution>
                     </executions>
                 </plugin>
-
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>flatten-maven-plugin</artifactId>
@@ -256,7 +245,6 @@
                         </execution>
                     </executions>
                 </plugin>
-
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
@@ -278,7 +266,6 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
             </plugin>
-
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -321,7 +308,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -340,7 +326,6 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -354,7 +339,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -372,7 +356,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
@@ -385,7 +368,6 @@
             </plugin>
         </plugins>
     </build>
-
     <profiles>
         <profile>
             <id>central</id>
@@ -405,7 +387,6 @@
                             </execution>
                         </executions>
                     </plugin>
-
                     <plugin>
                         <groupId>org.sonatype.central</groupId>
                         <artifactId>central-publishing-maven-plugin</artifactId>
