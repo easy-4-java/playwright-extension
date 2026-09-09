@@ -164,14 +164,14 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
     </dependencies>
-    <modules>
-        <module>playwright-extension-core</module>
-        <module>playwright-extension-image</module>
-        <module>playwright-extension-pdf</module>
-        <module>playwright-extension-task</module>
-        <module>playwright-extension-render</module>
-        <module>playwright-extension-spring</module>
-    </modules>
+    <subprojects>
+        <subproject>playwright-extension-core</subproject>
+        <subproject>playwright-extension-image</subproject>
+        <subproject>playwright-extension-pdf</subproject>
+        <subproject>playwright-extension-task</subproject>
+        <subproject>playwright-extension-render</subproject>
+        <subproject>playwright-extension-spring</subproject>
+    </subprojects>
     
     <distributionManagement>
         <repository>
