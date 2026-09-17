@@ -35,8 +35,8 @@ class EnumsTest {
     @DisplayName("RenderType: 6 known values + desc round-trip")
     void renderType_values() {
         assertEquals(6, RenderType.values().length);
-        assertEquals("PDF output to file", RenderType.TO_PDF_FILE.getDesc());
-        assertEquals("Screenshot output to in-memory buffer", RenderType.TO_IMAGE_BUFFER.getDesc());
+        assertEquals("PDF输出到文件", RenderType.TO_PDF_FILE.getDesc());
+        assertEquals("图片输出到缓存", RenderType.TO_IMAGE_BUFFER.getDesc());
     }
 
     @Test
@@ -52,10 +52,10 @@ class EnumsTest {
     @Test
     @DisplayName("CheckState: lookup by int code")
     void checkState_lookup() {
-        assertEquals(CheckState.SUCCESS, CheckState.getByName(1));
-        assertEquals(CheckState.WEB_CHECK_FAIL, CheckState.getByName(2));
-        assertEquals(CheckState.IMG_CHECK_FAIL, CheckState.getByName(3));
-        assertNull(CheckState.getByName(0));
+        assertEquals(CheckState.SUCCESS, CheckState.getRenderState(1));
+        assertEquals(CheckState.WEB_CHECK_FAIL, CheckState.getRenderState(2));
+        assertEquals(CheckState.IMG_CHECK_FAIL, CheckState.getRenderState(3));
+        assertNull(CheckState.getRenderState(0));
     }
 
     @Test

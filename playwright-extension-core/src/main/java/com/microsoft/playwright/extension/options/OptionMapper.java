@@ -6,8 +6,8 @@ import java.util.function.Predicate;
 
 /**
  * A fluent utility for conditionally mapping values from source objects to target consumers.
- * Provides a builder-style API with predicate-based filtering ({@link #whenNonNull()},
- * {@link #whenHasText()}, {@link #when(java.util.function.Predicate)}) that skips the
+ * Provides a builder-style API with predicate-based filtering ({@link Source#whenNonNull()},
+ * {@link Source#whenHasText()}, {@link Source#when(java.util.function.Predicate)}) that skips the
  * consumer call when the predicate evaluates to {@code false}.
  *
  * <p>Usage example:

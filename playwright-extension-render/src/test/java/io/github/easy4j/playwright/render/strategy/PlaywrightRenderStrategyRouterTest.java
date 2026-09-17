@@ -15,9 +15,8 @@
  */
 package io.github.easy4j.playwright.render.strategy;
 
+import io.github.easy4j.playwright.render.bo.PageRenderBO;
 import io.github.easy4j.playwright.render.bo.WkhtmlRenderBO;
-import io.github.easy4j.playwright.render.config.RenderConfig;
-import io.github.easy4j.playwright.render.config.TaskIdGenerator;
 import io.github.easy4j.playwright.render.enums.RenderType;
 import io.github.easy4j.playwright.render.vo.WkhtmlRenderResultVO;
 import org.junit.jupiter.api.DisplayName;
@@ -25,8 +24,10 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
@@ -40,12 +41,12 @@ class PlaywrightRenderStrategyRouterTest {
     private static class StubStrategy extends AbstractPlaywrightRenderStrategy<WkhtmlRenderBO> {
         private final RenderType type;
         StubStrategy(RenderType type) {
-            super(RenderConfig.builder().build(), () -> "1");
             this.type = type;
         }
         @Override public RenderType getRenderType() { return type; }
-        @Override protected java.util.List<io.github.easy4j.playwright.render.bo.PageRenderBO> doGenerate(WkhtmlRenderBO b) { return Collections.emptyList(); }
-        @Override protected WkhtmlRenderResultVO doPacking(WkhtmlRenderBO b, java.util.List<io.github.easy4j.playwright.render.bo.PageRenderBO> p) { return new WkhtmlRenderResultVO(); }
+        @Override protected List<PageRenderBO> doGenerate(WkhtmlRenderBO b) { return Collections.emptyList(); }
+        @Override protected List<PageRenderBO> doCompress(WkhtmlRenderBO b, List<PageRenderBO> p) { return Collections.emptyList(); }
+        @Override protected WkhtmlRenderResultVO doPacking(WkhtmlRenderBO b, List<PageRenderBO> p) { return new WkhtmlRenderResultVO(); }
     }
 
     @Test
@@ -56,17 +57,24 @@ class PlaywrightRenderStrategyRouterTest {
         PlaywrightRenderStrategyRouter router =
                 new PlaywrightRenderStrategyRouter(Arrays.asList(image, pdf));
 
-        assertEquals(2, router.size());
         assertEquals(image, router.route(RenderType.TO_IMAGE_BUFFER));
         assertEquals(pdf, router.route(RenderType.TO_PDF_FILE));
     }
 
     @Test
-    @DisplayName("Router throws on unknown RenderType")
-    void route_unknownType_throws() {
+    @DisplayName("Router returns null for unknown RenderType")
+    void route_unknownType_returnsNull() {
+        StubStrategy pdf = new StubStrategy(RenderType.TO_PDF_FILE);
         PlaywrightRenderStrategyRouter router =
-                new PlaywrightRenderStrategyRouter(Collections.emptyList());
+                new PlaywrightRenderStrategyRouter(Collections.singletonList(pdf));
+
+        assertNull(router.route(RenderType.TO_IMAGE_FILE));
+    }
+
+    @Test
+    @DisplayName("Router throws on empty strategy list")
+    void constructor_emptyList_throws() {
         assertThrows(IllegalArgumentException.class,
-                () -> router.route(RenderType.TO_IMAGE_FILE));
+                () -> new PlaywrightRenderStrategyRouter(Collections.emptyList()));
     }
 }
