@@ -43,7 +43,7 @@
         <maven.version>4.0.0-rc-5</maven.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <revision>2.0.x.20260630-SNAPSHOT</revision>
+        <revision>3.0.x.20260630-SNAPSHOT</revision>
         
         <assertj.version>3.27.7</assertj.version>
         <caffeine.version>3.1.8</caffeine.version>
