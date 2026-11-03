@@ -4,14 +4,20 @@ import com.microsoft.playwright.*;
 import com.microsoft.playwright.extension.PlaywrightBrowserType;
 import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
+import java.io.File;
+import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -121,6 +127,19 @@ class BrowserContextPooledObjectFactoryTest {
     }
 
     @Test
+    void shouldDestroyObjectAndClearContextResources() throws Exception {
+        when(browserContext.pages()).thenReturn(Collections.emptyList());
+        BrowserContextPooledObjectFactory factory = new BrowserContextPooledObjectFactory(
+                PlaywrightBrowserType.chromium, new BrowserType.LaunchOptions(), new Browser.NewContextOptions());
+
+        factory.destroyObject(new DefaultPooledObject<>(browserContext));
+
+        verify(browserContext).clearCookies();
+        verify(browserContext).clearPermissions();
+        verify(browserContext).pages();
+    }
+
+    @Test
     void shouldPassivateObject() throws Exception {
         when(browserContext.pages()).thenReturn(Collections.emptyList());
         BrowserType.LaunchOptions launchOptions = new BrowserType.LaunchOptions().setHeadless(true);
@@ -209,6 +228,37 @@ class BrowserContextPooledObjectFactoryTest {
         assertDoesNotThrow(() -> factory.cleanupBrowserContext(browserContext));
         verify(browserContext).clearCookies();
         verify(browserContext).clearPermissions();
+    }
+
+    @Test
+    void shouldCloseOpenPagesDuringCleanup() {
+        when(page.isClosed()).thenReturn(false);
+        when(browserContext.pages()).thenReturn(List.of(page));
+        BrowserContextPooledObjectFactory factory = new BrowserContextPooledObjectFactory(
+                PlaywrightBrowserType.chromium, new BrowserType.LaunchOptions(), new Browser.NewContextOptions());
+
+        factory.cleanupBrowserContext(browserContext);
+
+        verify(page).close();
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void shouldDeletePersistentUserDataDirectoryDuringCleanup(@TempDir Path temporaryDirectory) throws Exception {
+        Path userDataDirectory = Files.createDirectory(temporaryDirectory.resolve("browser-profile"));
+        Files.writeString(userDataDirectory.resolve("state.txt"), "session data");
+        Field field = BrowserContextPooledObjectFactory.class.getDeclaredField("USER_DATA_DIR_MAP");
+        field.setAccessible(true);
+        Map<BrowserContext, File> directories = (Map<BrowserContext, File>) field.get(null);
+        directories.put(browserContext, userDataDirectory.toFile());
+        when(browserContext.pages()).thenReturn(Collections.emptyList());
+        BrowserContextPooledObjectFactory factory = new BrowserContextPooledObjectFactory(
+                PlaywrightBrowserType.chromium, new BrowserType.LaunchOptions(), new Browser.NewContextOptions());
+
+        factory.cleanupBrowserContext(browserContext);
+
+        assertFalse(Files.exists(userDataDirectory));
+        assertFalse(directories.containsKey(browserContext));
     }
 
     @Test
