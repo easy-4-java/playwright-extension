@@ -34,6 +34,11 @@ jobs:
           java-version: '17'
           cache: maven
 
+      - name: Install Chromium for render integration tests
+        run: |
+          mvn -B --no-transfer-progress -pl playwright-extension-render -am -DskipTests install
+          mvn -B --no-transfer-progress -f playwright-extension-render/pom.xml org.codehaus.mojo:exec-maven-plugin:3.6.4:java -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args='install --with-deps chromium'
+
       - name: Build and verify with JaCoCo coverage report
         run: mvn -B --no-transfer-progress clean verify
 
