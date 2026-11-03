@@ -95,6 +95,7 @@ public class PagePdfOptions {
         map.from(this.getMargin()).to(options::setMargin);
         map.from(this.getOutline()).to(options::setOutline);
         map.from(this.getPageRanges()).whenHasText().to(options::setPageRanges);
+        map.from(this.getPath()).to(options::setPath);
         map.from(this.getPreferCssPageSize()).to(options::setPreferCSSPageSize);
         map.from(this.getPrintBackground()).to(options::setPrintBackground);
         map.from(this.getScale()).to(options::setScale);
