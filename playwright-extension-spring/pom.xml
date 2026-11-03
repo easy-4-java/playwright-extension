@@ -16,7 +16,7 @@
     <description>Spring Boot integration for playwright-extension: auto-configuration, properties binding, render wiring</description>
 
     <properties>
-        <spring-boot.version>3.2.12</spring-boot.version>
+        <spring-boot.version>3.5.14</spring-boot.version>
         <spring-framework.version>6.2.19</spring-framework.version>
     </properties>
 
