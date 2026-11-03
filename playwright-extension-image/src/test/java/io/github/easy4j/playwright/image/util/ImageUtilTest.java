@@ -191,4 +191,20 @@ class ImageUtilTest {
         ImageUtil.corpRegion(source.toFile(), croppedByCoordinates.toFile(), 20, 10, 10, 5, 40, 20);
         assertEquals(20, ImageIO.read(croppedByCoordinates.toFile()).getWidth());
     }
+
+    @Test
+    void watermarkIsVisibleOnSmallImageAndFile() throws IOException {
+        BufferedImage white = ImageUtil.getWhiteImage(300, 100);
+        BufferedImage watermarked = ImageUtil.watermark(white, Positions.CENTER, "Sample", 0, 1f);
+        assertFalse(ImageUtil.isWhiteImage(watermarked));
+        assertTrue(ImageUtil.isWhiteImage(white));
+
+        Path source = temporaryDirectory.resolve("plain.png");
+        Path output = temporaryDirectory.resolve("watermarked.png");
+        assertTrue(ImageIO.write(white, "png", source.toFile()));
+        ImageUtil.watermark(source.toFile(), output.toFile(), Positions.CENTER, "Sample", 0, 1f);
+        BufferedImage loaded = ImageIO.read(output.toFile());
+        assertNotNull(loaded);
+        assertFalse(ImageUtil.isWhiteImage(loaded));
+    }
 }
