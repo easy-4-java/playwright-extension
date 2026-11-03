@@ -6,6 +6,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class ThreadUtilsTest {
 
@@ -160,6 +161,53 @@ class ThreadUtilsTest {
         executor.shutdown();
         executor.shutdownNow();
         assertDoesNotThrow(() -> ThreadUtils.shutdownGracefully(executor, 1, TimeUnit.SECONDS));
+    }
+
+    @Test
+    void interruptsAndJoinsAnActiveThread() throws Exception {
+        CountDownLatch started = new CountDownLatch(1);
+        Thread thread = new Thread(() -> {
+            started.countDown();
+            try {
+                Thread.sleep(10_000);
+            } catch (InterruptedException expected) {
+                Thread.currentThread().interrupt();
+            }
+        });
+        thread.start();
+        try {
+            assertTrue(started.await(2, TimeUnit.SECONDS));
+            ThreadUtils.shutdownGracefully(thread, 1_000);
+            assertFalse(thread.isAlive());
+        } finally {
+            thread.interrupt();
+            thread.join(1_000);
+        }
+    }
+
+    @Test
+    void forcesShutdownWhenExecutorDoesNotTerminate() throws Exception {
+        ExecutorService executor = mock(ExecutorService.class);
+        when(executor.awaitTermination(0, TimeUnit.MILLISECONDS)).thenReturn(false, false);
+
+        ThreadUtils.shutdownGracefully(executor, 0, TimeUnit.MILLISECONDS);
+
+        verify(executor).shutdown();
+        verify(executor).shutdownNow();
+        verify(executor, times(2)).awaitTermination(0, TimeUnit.MILLISECONDS);
+    }
+
+    @Test
+    void preservesInterruptStatusWhenExecutorWaitIsInterrupted() throws Exception {
+        ExecutorService executor = mock(ExecutorService.class);
+        when(executor.awaitTermination(0, TimeUnit.MILLISECONDS)).thenThrow(new InterruptedException());
+        try {
+            ThreadUtils.shutdownGracefully(executor, 0, TimeUnit.MILLISECONDS);
+            assertTrue(Thread.currentThread().isInterrupted());
+            verify(executor).shutdownNow();
+        } finally {
+            Thread.interrupted();
+        }
     }
 
     @Test

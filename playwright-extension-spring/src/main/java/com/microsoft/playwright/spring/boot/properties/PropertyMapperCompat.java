@@ -21,8 +21,8 @@ import org.springframework.boot.context.properties.PropertyMapper;
  * Compatibility layer for Spring Boot's {@link PropertyMapper}.
  *
  * <p>On Spring Boot 3.x both {@code alwaysApplyingWhenNonNull()} and
- * {@code Source.whenNonNull()} exist natively. On Spring Boot 4.x they were
- * removed; this class bridges the gap so the options POJOs compile on both.</p>
+ * {@code Source.whenNonNull()} exist natively. This helper filters null values
+ * without relying on those methods. Exceptions thrown by suppliers propagate.</p>
  *
  * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
@@ -33,13 +33,13 @@ public final class PropertyMapperCompat {
         // utility
     }
 
-    /** Equivalent of {@code PropertyMapper.alwaysApplyingWhenNonNull()}. */
+    /** Apply null-value filtering to every source of a mapper. */
     public static PropertyMapper alwaysApplyingWhenNonNull() {
-        return PropertyMapper.get();
+        return PropertyMapper.get().alwaysApplying(PropertyMapperCompat::whenNonNull);
     }
 
     /**
-     * Equivalent of {@code Source.whenNonNull()}.
+     * Filter a source when its value is null. Supplier exceptions propagate.
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static <T> PropertyMapper.Source<T> whenNonNull(PropertyMapper.Source<T> source) {

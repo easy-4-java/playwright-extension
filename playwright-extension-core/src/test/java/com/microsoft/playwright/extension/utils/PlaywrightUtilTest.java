@@ -2,6 +2,7 @@ package com.microsoft.playwright.extension.utils;
 
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.Cookie;
+import com.microsoft.playwright.options.BoundingBox;
 import com.microsoft.playwright.extension.PlaywrightBrowserType;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -131,5 +132,31 @@ class PlaywrightUtilTest {
     @Test
     void shouldHaveOptionMapper() {
         assertNotNull(PlaywrightUtil.map);
+    }
+
+    @Test
+    void clearsLocalStorageOnTheGivenPage() {
+        PlaywrightUtil.clearLocalStorage(page);
+        verify(page).evaluate("window.localStorage.clear();");
+    }
+
+    @Test
+    void dragsSelectedElementByRequestedDistance() {
+        ElementHandle handle = mock(ElementHandle.class);
+        Mouse mouse = mock(Mouse.class);
+        BoundingBox box = new BoundingBox();
+        box.x = 10;
+        box.y = 20;
+        when(page.waitForSelector(eq("#slider"), any(Page.WaitForSelectorOptions.class))).thenReturn(handle);
+        when(page.mouse()).thenReturn(mouse);
+        when(handle.boundingBox()).thenReturn(box);
+
+        PlaywrightUtil.slide(page, "#slider", 40, 3);
+
+        verify(page).waitForSelector(eq("#slider"), any(Page.WaitForSelectorOptions.class));
+        verify(mouse).move(10, 20);
+        verify(mouse).move(eq(50.0), eq(20.0), argThat(options -> options.steps == 3));
+        verify(mouse).down(any(Mouse.DownOptions.class));
+        verify(mouse).up();
     }
 }

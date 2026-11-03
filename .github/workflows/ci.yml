@@ -1,18 +1,18 @@
-# CI workflow for the feature/2.0.x line (JDK 17)
+# CI workflow for main and feature/2.0.x (JDK 17)
 #
 # Triggers:
-#   - push / pull_request on the feature/2.0.x branch
+#   - push / pull_request on main and feature/2.0.x
 #   - manual workflow_dispatch
 #
-# Runs `mvn -B clean verify` which includes the JaCoCo coverage gate
-# (90% line coverage, haltOnFailure=false) configured in the POM.
+# Runs `mvn -B clean verify` including JaCoCo coverage reporting.
+# The configured 90% coverage check is currently nonblocking (haltOnFailure=false).
 name: CI
 
 on:
   push:
-    branches: [feature/2.0.x]
+    branches: [main, feature/2.0.x]
   pull_request:
-    branches: [feature/2.0.x]
+    branches: [main, feature/2.0.x]
   workflow_dispatch:
 
 permissions:
@@ -34,7 +34,12 @@ jobs:
           java-version: '17'
           cache: maven
 
-      - name: Build and verify with JaCoCo coverage gate
+      - name: Install Chromium for render integration tests
+        run: |
+          mvn -B --no-transfer-progress -pl playwright-extension-render -am -DskipTests install
+          mvn -B --no-transfer-progress -f playwright-extension-render/pom.xml org.codehaus.mojo:exec-maven-plugin:3.6.4:java -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args='install --with-deps chromium'
+
+      - name: Build and verify with JaCoCo coverage report
         run: mvn -B --no-transfer-progress clean verify
 
       - name: Upload JaCoCo coverage report

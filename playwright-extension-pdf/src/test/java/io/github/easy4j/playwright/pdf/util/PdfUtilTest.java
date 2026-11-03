@@ -20,6 +20,9 @@ import io.github.easy4j.playwright.pdf.enums.PdfPageSize;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionURI;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
+import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -114,6 +117,34 @@ class PdfUtilTest {
     }
 
     @Test
+    @DisplayName("addFullPageLink validates page and page size")
+    void addFullPageLink_validatesInputs() throws IOException {
+        try (PDDocument document = new PDDocument()) {
+            assertThrows(IllegalArgumentException.class,
+                    () -> PdfUtil.addFullPageLink(document, null, "https://example.com", PdfPageSize.A4, false));
+            assertThrows(IllegalArgumentException.class,
+                    () -> PdfUtil.addFullPageLink(document, new PDPage(), "https://example.com", null, false));
+        }
+    }
+
+    @Test
+    @DisplayName("visible full-page link has the page rectangle, URI and underline")
+    void addFullPageLink_visibleLinkGeometry() throws IOException {
+        try (PDDocument document = new PDDocument()) {
+            PDPage page = new PDPage(PdfPageSize.A4.getRectangle());
+            document.addPage(page);
+            PdfUtil.addFullPageLink(document, page, "https://example.com", PdfPageSize.A4, true);
+
+            PDAnnotationLink link = (PDAnnotationLink) page.getAnnotations().get(0);
+            assertEquals("https://example.com", ((PDActionURI) link.getAction()).getURI());
+            assertEquals(PdfPageSize.A4.getRectangle().getWidth(), link.getRectangle().getWidth());
+            assertEquals(PdfPageSize.A4.getRectangle().getHeight(), link.getRectangle().getHeight());
+            assertEquals(PDBorderStyleDictionary.STYLE_UNDERLINE, link.getBorderStyle().getStyle());
+            assertEquals(1, link.getBorderStyle().getWidth());
+        }
+    }
+
+    @Test
     @DisplayName("addLinkSimple adds one visible link annotation")
     void addLinkSimple_addsAnnotation() throws IOException {
         try (PDDocument document = new PDDocument()) {
@@ -123,6 +154,34 @@ class PdfUtilTest {
             PdfUtil.addLinkSimple(document, page, "click", "https://example.com");
 
             assertEquals(1, page.getAnnotations().size());
+        }
+    }
+
+    @Test
+    @DisplayName("addLinkSimple rejects absent page, text and URL")
+    void addLinkSimple_validatesInputs() throws IOException {
+        try (PDDocument document = new PDDocument()) {
+            PDPage page = new PDPage(PdfPageSize.A4.getRectangle());
+            document.addPage(page);
+            assertThrows(IllegalArgumentException.class,
+                    () -> PdfUtil.addLinkSimple(document, null, "click", "https://example.com"));
+            assertThrows(IllegalArgumentException.class,
+                    () -> PdfUtil.addLinkSimple(document, page, " ", "https://example.com"));
+            assertThrows(IllegalArgumentException.class,
+                    () -> PdfUtil.addLinkSimple(document, page, "click", null));
+        }
+    }
+
+    @Test
+    @DisplayName("addLinkSimple uses default font size when supplied size is zero")
+    void addLinkSimple_zeroFontSizeUsesDefault() throws IOException {
+        try (PDDocument document = new PDDocument()) {
+            PDPage page = new PDPage(PdfPageSize.A4.getRectangle());
+            document.addPage(page);
+            PdfUtil.addLinkSimple(document, page, "click", "https://example.com", 10, 20, 0);
+            PDAnnotationLink link = (PDAnnotationLink) page.getAnnotations().get(0);
+            assertEquals(12, link.getRectangle().getHeight());
+            assertEquals("https://example.com", ((PDActionURI) link.getAction()).getURI());
         }
     }
 

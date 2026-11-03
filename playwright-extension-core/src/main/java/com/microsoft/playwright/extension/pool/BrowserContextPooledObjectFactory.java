@@ -183,6 +183,7 @@ public class BrowserContextPooledObjectFactory implements PooledObjectFactory<Br
                     continue;
                 }
                 log.info("Destroy page of BrowserContext Instance '{}'.", browserContext);
+                PlaywrightUtil.closePage(page);
             }
         }
     }

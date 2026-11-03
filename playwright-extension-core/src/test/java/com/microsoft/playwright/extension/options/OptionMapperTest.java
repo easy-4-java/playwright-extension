@@ -133,4 +133,26 @@ class OptionMapperTest {
                 .to(captured::set);
         assertEquals("value", captured.get());
     }
+
+    @Test
+    void shouldFilterNullWithoutAnExplicitCondition() {
+        AtomicReference<String> captured = new AtomicReference<>("unchanged");
+        OptionMapper.get().alwaysApplyingWhenNonNull().from((String) null).to(captured::set);
+        assertEquals("unchanged", captured.get());
+    }
+
+    @Test
+    void shouldPreserveNullFilterWhenAddingAnotherCondition() {
+        AtomicReference<String> captured = new AtomicReference<>("unchanged");
+        OptionMapper.get().alwaysApplyingWhenNonNull().from((String) null)
+                .when(value -> true).to(captured::set);
+        assertEquals("unchanged", captured.get());
+    }
+
+    @Test
+    void mapperWithoutNullFilterCanStillPassNull() {
+        AtomicReference<String> captured = new AtomicReference<>("unchanged");
+        OptionMapper.get().from((String) null).to(captured::set);
+        assertNull(captured.get());
+    }
 }

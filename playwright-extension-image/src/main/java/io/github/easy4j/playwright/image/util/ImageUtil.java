@@ -28,6 +28,7 @@ import net.coobird.thumbnailator.resizers.configurations.Dithering;
 import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
@@ -318,18 +319,20 @@ public final class ImageUtil {
 
     /** Build a translucent text watermark of the given dimensions. */
     public static BufferedImage watermarkImage(String text, int width, int height, double rotate) {
-        BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        Graphics2D g = bi.createGraphics();
-        bi = g.getDeviceConfiguration().createCompatibleImage(width, height, Transparency.TRANSLUCENT);
-        g.dispose();
-        g = bi.createGraphics();
-        g.setFont(new Font("微软雅黑", Font.BOLD, 26));
-        char[] data = text.toCharArray();
-        g.rotate(rotate);
-        g.setColor(Color.RED);
-        g.drawChars(data, 0, data.length, -70, 200);
-        g.dispose();
-        return bi;
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D graphics = image.createGraphics();
+        try {
+            graphics.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 26));
+            graphics.setColor(Color.RED);
+            graphics.rotate(rotate, width / 2d, height / 2d);
+            FontMetrics metrics = graphics.getFontMetrics();
+            int x = (width - metrics.stringWidth(text)) / 2;
+            int y = (height - metrics.getHeight()) / 2 + metrics.getAscent();
+            graphics.drawString(text, x, y);
+        } finally {
+            graphics.dispose();
+        }
+        return image;
     }
 
     /** Apply a text watermark onto a {@link BufferedImage} at the given position. */

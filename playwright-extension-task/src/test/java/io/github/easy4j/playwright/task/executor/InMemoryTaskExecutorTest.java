@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -110,5 +111,36 @@ class InMemoryTaskExecutorTest {
         // wraps that in ExecutionException on .get().
         assertTrue(ex.getCause() instanceof RuntimeException);
         assertTrue(ex.getCause().getCause() instanceof java.io.IOException);
+    }
+
+    @Test
+    void twoArgumentConstructorExecutesTasks() throws Exception {
+        try (InMemoryTaskExecutor defaultQueue = new InMemoryTaskExecutor(1, 1)) {
+            assertEquals("done", defaultQueue.submit("default-queue", () -> "done").get(2, TimeUnit.SECONDS));
+        }
+    }
+
+    @Test
+    void boundedQueueRunsOverflowTaskOnCallerThread() throws Exception {
+        CountDownLatch started = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+        try (InMemoryTaskExecutor bounded = InMemoryTaskExecutor.builder()
+                .corePoolSize(1).maximumPoolSize(1).queueCapacity(1).build()) {
+            CompletableFuture<String> running = bounded.submit("running", () -> {
+                started.countDown();
+                release.await();
+                return "running";
+            });
+            assertTrue(started.await(2, TimeUnit.SECONDS));
+            CompletableFuture<String> queued = bounded.submit("queued", () -> "queued");
+            long callerThread = Thread.currentThread().getId();
+            CompletableFuture<Long> overflow = bounded.submit("overflow", () -> Thread.currentThread().getId());
+            assertEquals(callerThread, overflow.get(2, TimeUnit.SECONDS));
+            release.countDown();
+            assertEquals("running", running.get(2, TimeUnit.SECONDS));
+            assertEquals("queued", queued.get(2, TimeUnit.SECONDS));
+        } finally {
+            release.countDown();
+        }
     }
 }

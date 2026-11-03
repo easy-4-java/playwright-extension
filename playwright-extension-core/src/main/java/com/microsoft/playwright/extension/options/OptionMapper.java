@@ -21,6 +21,8 @@ import java.util.function.Predicate;
  */
 public final class OptionMapper {
 
+    private boolean applyWhenNonNull;
+
     private OptionMapper() {
     }
 
@@ -35,11 +37,10 @@ public final class OptionMapper {
 
     /**
      * Configures this mapper to always apply mappings when the value is non-null.
-     * Currently a no-op placeholder for future configuration.
-     *
      * @return this mapper instance for chaining
      */
     public OptionMapper alwaysApplyingWhenNonNull() {
+        this.applyWhenNonNull = true;
         return this;
     }
 
@@ -51,7 +52,7 @@ public final class OptionMapper {
      * @return a {@link Source} that can be conditionally mapped to a consumer
      */
     public <T> Source<T> from(T value) {
-        return new Source<>(value);
+        return new Source<>(value, !this.applyWhenNonNull || value != null);
     }
 
     /**
@@ -63,10 +64,11 @@ public final class OptionMapper {
     public static final class Source<T> {
 
         private final T value;
-        private boolean accepted = true;
+        private boolean accepted;
 
-        private Source(T value) {
+        private Source(T value, boolean accepted) {
             this.value = value;
+            this.accepted = accepted;
         }
 
         /**
@@ -75,7 +77,7 @@ public final class OptionMapper {
          * @return this source instance for chaining
          */
         public Source<T> whenNonNull() {
-            this.accepted = Objects.nonNull(this.value);
+            this.accepted = this.accepted && Objects.nonNull(this.value);
             return this;
         }
 
@@ -85,7 +87,7 @@ public final class OptionMapper {
          * @return this source instance for chaining
          */
         public Source<T> whenHasText() {
-            this.accepted = this.value instanceof String && ((String) this.value).trim().length() > 0;
+            this.accepted = this.accepted && this.value instanceof String && ((String) this.value).trim().length() > 0;
             return this;
         }
 
@@ -96,7 +98,7 @@ public final class OptionMapper {
          * @return this source instance for chaining
          */
         public Source<T> when(Predicate<T> predicate) {
-            this.accepted = predicate.test(this.value);
+            this.accepted = this.accepted && predicate.test(this.value);
             return this;
         }
 

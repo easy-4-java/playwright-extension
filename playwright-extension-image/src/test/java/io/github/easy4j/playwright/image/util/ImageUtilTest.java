@@ -18,9 +18,14 @@ package io.github.easy4j.playwright.image.util;
 import io.github.easy4j.playwright.image.enums.ImagePageSize;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import net.coobird.thumbnailator.geometry.Positions;
 
+import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -35,6 +40,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * @since 1.0.0
  */
 class ImageUtilTest {
+
+    @TempDir Path temporaryDirectory;
 
     @Test
     @DisplayName("getImageOnlyColor returns an image filled with the requested colour")
@@ -143,5 +150,61 @@ class ImageUtilTest {
         assertEquals(1191, result.getHeight());
         // For the no-op case, we return the input directly (object identity is preserved).
         assertSame(input, result);
+    }
+
+    @Test
+    void standardPageScalingProducesExpectedDimensions() throws IOException {
+        BufferedImage small = ImageUtil.getImageOnlyColor(20, 20, Color.RED);
+        BufferedImage a4 = ImageUtil.scaleToA4(small);
+        BufferedImage a3 = ImageUtil.scaleToA3(small, 100);
+
+        assertEquals((int) ImagePageSize.A4.getWidth(), a4.getWidth());
+        assertEquals((int) ImagePageSize.A4.getHeight(), a4.getHeight());
+        assertEquals((int) ImagePageSize.A3.getWidth(), a3.getWidth());
+        assertEquals((int) ImagePageSize.A3.getHeight(), a3.getHeight());
+    }
+
+    @Test
+    void fileTransformationsWriteResizedRotatedAndCroppedImages() throws IOException {
+        Path source = temporaryDirectory.resolve("source.png");
+        assertTrue(ImageIO.write(ImageUtil.getImageOnlyColor(100, 50, Color.BLUE), "png", source.toFile()));
+
+        Path sized = temporaryDirectory.resolve("sized.png");
+        ImageUtil.zoomSize(source.toFile(), sized.toFile(), 20, 20);
+        assertEquals(20, ImageIO.read(sized.toFile()).getWidth());
+        assertEquals(10, ImageIO.read(sized.toFile()).getHeight());
+
+        Path scaled = temporaryDirectory.resolve("scaled.png");
+        ImageUtil.zoomScaling(source.toFile(), scaled.toFile(), 0.5);
+        assertEquals(50, ImageIO.read(scaled.toFile()).getWidth());
+
+        Path rotated = temporaryDirectory.resolve("rotated.png");
+        ImageUtil.rotateAngle(source.toFile(), rotated.toFile(), 90);
+        assertEquals(50, ImageIO.read(rotated.toFile()).getWidth());
+        assertEquals(100, ImageIO.read(rotated.toFile()).getHeight());
+
+        Path croppedByPosition = temporaryDirectory.resolve("crop-position.png");
+        ImageUtil.corpRegion(source.toFile(), croppedByPosition.toFile(), Positions.CENTER, 20, 10, 40, 20);
+        assertEquals(20, ImageIO.read(croppedByPosition.toFile()).getWidth());
+
+        Path croppedByCoordinates = temporaryDirectory.resolve("crop-coordinates.png");
+        ImageUtil.corpRegion(source.toFile(), croppedByCoordinates.toFile(), 20, 10, 10, 5, 40, 20);
+        assertEquals(20, ImageIO.read(croppedByCoordinates.toFile()).getWidth());
+    }
+
+    @Test
+    void watermarkIsVisibleOnSmallImageAndFile() throws IOException {
+        BufferedImage white = ImageUtil.getWhiteImage(300, 100);
+        BufferedImage watermarked = ImageUtil.watermark(white, Positions.CENTER, "Sample", 0, 1f);
+        assertFalse(ImageUtil.isWhiteImage(watermarked));
+        assertTrue(ImageUtil.isWhiteImage(white));
+
+        Path source = temporaryDirectory.resolve("plain.png");
+        Path output = temporaryDirectory.resolve("watermarked.png");
+        assertTrue(ImageIO.write(white, "png", source.toFile()));
+        ImageUtil.watermark(source.toFile(), output.toFile(), Positions.CENTER, "Sample", 0, 1f);
+        BufferedImage loaded = ImageIO.read(output.toFile());
+        assertNotNull(loaded);
+        assertFalse(ImageUtil.isWhiteImage(loaded));
     }
 }
