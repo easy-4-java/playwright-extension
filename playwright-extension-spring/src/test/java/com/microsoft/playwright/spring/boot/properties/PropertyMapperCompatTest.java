@@ -4,8 +4,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.PropertyMapper;
 
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PropertyMapperCompatTest {
 
@@ -30,5 +32,17 @@ class PropertyMapperCompatTest {
 
         PropertyMapperCompat.whenNonNull(PropertyMapper.get().from("updated")).to(result::set);
         assertEquals("updated", result.get());
+    }
+
+    @Test
+    void supplierFailuresAreNotSwallowed() {
+        Supplier<String> failing = () -> { throw new NullPointerException("supplier failure"); };
+        AtomicReference<String> result = new AtomicReference<>("original");
+
+        assertThrows(NullPointerException.class,
+                () -> PropertyMapperCompat.whenNonNull(PropertyMapper.get().from(failing)).to(result::set));
+        assertThrows(NullPointerException.class,
+                () -> PropertyMapperCompat.alwaysApplyingWhenNonNull().from(failing).to(result::set));
+        assertEquals("original", result.get());
     }
 }
