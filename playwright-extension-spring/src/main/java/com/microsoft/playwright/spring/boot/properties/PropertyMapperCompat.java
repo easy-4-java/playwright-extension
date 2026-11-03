@@ -35,7 +35,7 @@ public final class PropertyMapperCompat {
 
     /** Equivalent of {@code PropertyMapper.alwaysApplyingWhenNonNull()}. */
     public static PropertyMapper alwaysApplyingWhenNonNull() {
-        return PropertyMapper.get();
+        return PropertyMapper.get().alwaysApplying(PropertyMapperCompat::whenNonNull);
     }
 
     /**
